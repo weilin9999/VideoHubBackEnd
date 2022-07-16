@@ -1,0 +1,25 @@
+{
+  "name": "videohub-backend",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "default-passive-events": "^2.0.0",
+    "echarts": "^5.3.3",
+    "pinia": "^2.0.14",
+    "vue": "^3.2.25",
+    "vue-cookies": "^1.8.1",
+    "vue-router": "4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^2.3.3",
+    "typescript": "^4.5.4",
+    "vite": "^2.9.9",
+    "vue-tsc": "^0.34.7"
+  }
+}
