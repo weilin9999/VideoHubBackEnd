@@ -16,7 +16,7 @@
 .class-list-box{
     width: 98%;
     height: auto;
-    background-color: #fff;
+    background-color: var(--class-list-box-background);
     border-radius: 4px;
     box-sizing: border-box;
     margin-bottom: 50px;
@@ -58,7 +58,7 @@
     align-items: center;
 }
 .class-seach-group p{
-    color: #606266;
+    color: var(--class-list-box-other-color);
     font-size: 13px;
     margin-right: 10px;
     margin-left: 10px;
@@ -83,7 +83,7 @@
     margin-bottom: 12px;
 }
 .dialog__inner___interval p{
-    color: #606266;
+    color: var(--class-list-box-other-color);
     font-size: 13px;
     margin-right: 10px;
 }

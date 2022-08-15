@@ -1,6 +1,6 @@
 <template>
     <div class="alert-box">
-        <div v-for="(item,key) in msg" :key="key" :class="[item.ava==true ? 'anima-out':'anima-in',item.info==1 ? 'alert-msg-success':item.info==2 ? 'alert-msg-error':'alert-msg-waring']">
+        <div v-for="(item,key) in data.msg" :key="key" :class="[item.ava==true ? 'anima-out':'anima-in',item.info==1 ? 'alert-msg-success':item.info==2 ? 'alert-msg-error':'alert-msg-waring']">
             <div :style="item.info==1 ? 'background-color:#67c23a;':item.info==2 ? 'background-color:#f56c6c;':'background-color:#e6a32c;'" class="alert-line-cake"></div>
             <div class="alert-left-box">
                 <span style="font-size: 13px;" v-if="item.info == 1" class="iconfont icon-lijiqueren col-15"></span>
@@ -12,55 +12,53 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: "AlertMsg",
-    data(){
-		return {
-			msg:[],
-            isTimeUp :false,
-            timetick : null
-		}
-    },
-    methods:{
-		addMsg(info,msg){
-			let temp = {info:info,msg:msg,ava:false}
-			this.msg.unshift(temp)
-            this.timeDelMsg()
-		},
-        timeDelMsg(){
-             if(this.isTimeUp == false){
-                this.isTimeUp = true
-                this.timetick = window.setInterval(
-                ()=>{
-                    let lenTemp = this.msg.length
-                    this.msg[lenTemp-1].ava = true
-                    // console.log(lenTemp)
-                    setTimeout(()=>{
-                        if(lenTemp >= 1){
-                            this.msg.pop()
-                        }
-                        // console.log(this.msg[lenTemp-2])
-                        if(this.msg[lenTemp-2]==undefined){
-                            this.isTimeUp = false
-                            window.clearInterval(this.timetick)
-                            window.clearInterval(this.timetick)
-                        }
-                    }, 100 )
-                },2000
-                )
-            }
+<script lang="ts" setup>
+import { reactive } from 'vue';
 
-            if(this.msg[0]==undefined){
-                window.clearInterval(this.timetick)
-                window.clearInterval(this.timetick)
-                this.timetick = null
-                this.isTimeUp = false
-            }
-        },
-	},
-})
+const data = reactive({
+    msg:[],
+    isTimeUp :false,
+    timetick : null
+});
+    
+const addMsg = (info : number,msg : string)=>{
+    let temp = {info:info,msg:msg,ava:false}
+    data.msg.unshift(temp)
+    timeDelMsg()
+}
+function timeDelMsg(){
+        if(data.isTimeUp == false){
+        data.isTimeUp = true
+        data.timetick = window.setInterval(
+        ()=>{
+            let lenTemp = data.msg.length
+            data.msg[lenTemp-1].ava = true
+            // console.log(lenTemp)
+            setTimeout(()=>{
+                if(lenTemp >= 1){
+                    data.msg.pop()
+                }
+                // console.log(this.msg[lenTemp-2])
+                if(data.msg[lenTemp-2]==undefined){
+                    data.isTimeUp = false
+                    window.clearInterval(data.timetick)
+                    window.clearInterval(data.timetick)
+                }
+            }, 100 )
+        },2000
+        )
+    }
+
+    if(data.msg[0]==undefined){
+        window.clearInterval(data.timetick)
+        window.clearInterval(data.timetick)
+        data.timetick = null
+        data.isTimeUp = false
+    }
+}
+
+defineExpose ({ addMsg })
+
 </script>
 
 <style scoped>
@@ -80,9 +78,9 @@ export default defineComponent({
 .alert-msg-success{
     width: auto;
     min-width: 300px;
-    background-color: #f0f9eb;
-    border: 1px #e1f3e8 solid;
-    color: #67c23a;
+    background-color: var(--success-background);
+    border: 1px var(--success-border) solid;
+    color: var(--success-color);
     border-radius: 4px;
     overflow: hidden;
     opacity: 1;
@@ -94,9 +92,9 @@ export default defineComponent({
 .alert-msg-error{
     width: auto;
     min-width: 300px;
-    background-color: #fef0f0;
-    border: 1px #fde2e2 solid;
-    color: #f56c6c;
+    background-color: var(--danger-background);
+    border: 1px var(--danger-border) solid;
+    color: var(--danger-color);
     border-radius: 4px;
     overflow: hidden;
     opacity: 1;
@@ -108,9 +106,9 @@ export default defineComponent({
 .alert-msg-waring{
     width: auto;
     min-width: 300px;
-    background-color: #fdf6ec;
-    border: 1px #faecd8 solid;
-    color: #e6a32c;
+    background-color: var(--waring-background);
+    border: 1px var(--waring-border) solid;
+    color: var(--waring-color);
     border-radius: 4px;
     overflow: hidden;
     opacity: 1;

@@ -21,7 +21,7 @@
                 <div class="user-list___control__a" style="margin-top: 20px;">
                     <VH-Button width="65px" height="32px" @click="store.resFush" style="margin-left: 10px;" button-type="success"><span class="iconfont icon-shuaxin"></span>刷新</VH-Button>
                     <VH-Button :disabled="store.multData[0]==null" @click="store.openEditMultFunc" width="65px" height="32px" style="font-size: 12px;margin-right: 10px;margin-left: 10px;" button-type="primary"><span class="mini-icon_col iconfont icon-xiugai"></span> 编辑</VH-Button>
-                    <VH-Confirm :disabled="store.multData[0]==null" width="65px" height="25px" @confirm="deleteGroup" style="font-size: 12px;color:#606266;" desc="是否删除选中数据 ？">
+                    <VH-Confirm :disabled="store.multData[0]==null" width="65px" height="32px" :offset="7" @confirm="deleteGroup" style="font-size: 12px;color:#606266;" desc="是否删除选中数据 ？">
                         <VH-Button :disabled="store.multData[0]==null" width="65px" height="32px" button-type="danger" style="font-size: 12px;" ><span class="mini-icon_col iconfont icon-shanchu"></span> 删除</VH-Button>
                     </VH-Confirm>
                 </div>
@@ -132,7 +132,7 @@
             </VH-Dialog>
 
             <!-- Alert -->
-            <AlertMsg ref="AlertMsg"></AlertMsg>
+            <AlertMsg ref="alertMsg"></AlertMsg>
             
             <!-- photo -->
             <VH-Photo v-if="store.showImgView" :img-src="store.imgViewSrc" @close="store.showImgView=false"></VH-Photo>
@@ -140,263 +140,257 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
+import { ref } from 'vue'
 import appStore from '@/store';
 
-export default defineComponent({
-    setup(){
-        document.title = 'VideoHub 后台管理 - 用户管理 - 守护无价数据 ~'
-        const store = appStore.userList
-        store.getUserData('','','',store.curPage,store.pageSize)
-        return { store }
-    },
-    mounted() {
+document.title = 'VideoHub 后台管理 - 用户管理 - 守护无价数据 ~'
+const store = appStore.userList
+store.getUserData('','','',store.curPage,store.pageSize)
 
-    },
-    methods: {
-        goWhere(e){
-			let where = e.where
-			if(where == 'zero'){
-				this.$refs.AlertMsg.addMsg(
-					2,"搜索值只能大于1"
-				)
-			}else if(where == 'error'){
-				this.$refs.AlertMsg.addMsg(
-					2,"输入值有误"
-				)
-			}else if(where =='nosearch'){
-				this.$refs.AlertMsg.addMsg(
-					2,"输入的值大于总页数"
-				)
-			}else if(where >= 1 ){
-				this.store.goWhere(e)
-			}
-		},
-        coloseEdit(){
-            this.$refs.dialog_edit.close()
-        },
-        coloseMultEdit(){
-            this.$refs.dialog_mult_edit.close()
-            this.store.resFushNowPage()
-        },
-        retTimeDate(e){
-            return new Date(e).toLocaleString()
-        },
-        async deleteGroup() {
-            let result = await this.store.deleteMultFunc()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
-        async deleteUser(e) {
-            let result = await this.store.deleteFunc(e)
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
-        async editUserSure() {
-            if(this.store.userAvatarData != null){
-                this.uploadAvatar()
-            }
-            let result = await this.store.editSure()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                    this.coloseEdit()
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }else if(result.type == 4){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常出错："+result.data
-                    )
-                }
-            }
-        },
-        async editUserSureMult(){
-            if(this.store.userAvatarData != null){
-                this.uploadAvatar()
-            }
-            let result = await this.store.editSure()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                    this.coloseMultEdit()
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }else if(result.type == 4){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常出错："+result.data
-                    )
-                }
-            }
-        },
-        async nextEditFun() {
-            if(this.store.userAvatarData != null){
-                this.uploadAvatar()
-            }
-            let result = await this.store.editMultSure()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                    this.store.editMultNextFunc()
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }else if(result.type == 4){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常出错："+result.data
-                    )
-                }
-            }
-        },
-        async authorityUserIsadmin(uid,e){
-            let result = await this.store.changeIsAdmin(uid,e)
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
-        async authorityUserIsuploader(uid,e){
-            let result = await this.store.changeIsUploader(uid,e)
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
-        upload(e){
-            let item = e.target.files[0]
-            this.store.userAvatarData = item
-            //正则表达式，判断每个元素的type属性是否为图片形式，如图
-            if (item.type !== 'image/png' && item.type !== 'image/jpeg') {
-                // 提示只能是图片，return
-                this.$refs.AlertMsg.addMsg(
-                    2,"只能选择图片类型为jpg,png格式"
-                )
-                return;
-            }else if(item.type==undefined){
-                this.$refs.AlertMsg.addMsg(
-					2,"只能选择图片类型为jpg,png格式"
-				)
-                return;
-            }
-            // 保存下当前 this ，就是vue实例
-            var _this = this;
-            _this.filename = item.name
-            // 创建一个FileReader()对象，它里面有个readAsDataURL方法
-            let reader = new FileReader();
-            // readAsDataURL方法可以将上传的图片格式转为base64,然后在存入到图片路径, 
-            //这样就可以上传电脑任意位置的图片                            
-            reader.readAsDataURL(item);
-            //文件读取成功完成时触发
-            reader.addEventListener('load',function(){
-            //  reader.result返回文件的内容。
-            //只有在读取操作完成后，此属性才有效，返回的数据的格式取决于是使用哪种读取方法来执行读取操作的。
-                //给数组添加这个文件也就是图片的内容
-                _this.store.userAvatarTemp=reader.result
-            })
-        },
-        async uploadAvatar(){
-            let result = await this.store.uploadUserAvatar()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        2,result.data
-                    )
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,result.data
-                    )
-                }else if(result.type == 4){
-                    this.$refs.AlertMsg.addMsg(
-                        2,result.data
-                    )
-                }else if(result.type == 5){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                }else if(result.type == 6){
-                    this.$refs.AlertMsg.addMsg(
-                        2,result.data
-                    )
-                }
-            }
-        },
+const alertMsg = ref();
+const dialog_edit = ref();
+const dialog_mult_edit = ref();
+
+function goWhere(e : any){
+    let where = e.where
+    if(where == 'zero'){
+        alertMsg.value.addMsg(
+            2,"搜索值只能大于1"
+        )
+    }else if(where == 'error'){
+        alertMsg.value.addMsg(
+            2,"输入值有误"
+        )
+    }else if(where =='nosearch'){
+        alertMsg.value.addMsg(
+            2,"输入的值大于总页数"
+        )
+    }else if(where >= 1 ){
+        store.goWhere(e)
     }
-})
+}
+function coloseEdit(){
+    dialog_edit.value.close()
+}
+function coloseMultEdit(){
+    dialog_mult_edit.value.close()
+    store.resFushNowPage()
+}
+function retTimeDate(e : any){
+    return new Date(e).toLocaleString()
+}
+async function deleteGroup() {
+    let result : any = await store.deleteMultFunc()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
+async function deleteUser(e : any) {
+    let result : any = await store.deleteFunc(e)
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
+async function editUserSure() {
+    if(store.userAvatarData != null){
+        uploadAvatar()
+    }
+    let result : any = await store.editSure()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+            coloseEdit()
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }else if(result.type == 4){
+            alertMsg.value.addMsg(
+                2,"异常出错："+result.data
+            )
+        }
+    }
+}
+async function editUserSureMult(){
+    if(store.userAvatarData != null){
+        uploadAvatar()
+    }
+    let result : any = await store.editSure()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+            coloseMultEdit()
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }else if(result.type == 4){
+            alertMsg.value.addMsg(
+                2,"异常出错："+result.data
+            )
+        }
+    }
+}
+async function nextEditFun() {
+    if(store.userAvatarData != null){
+        uploadAvatar()
+    }
+    let result : any = await store.editMultSure()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+            store.editMultNextFunc()
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }else if(result.type == 4){
+            alertMsg.value.addMsg(
+                2,"异常出错："+result.data
+            )
+        }
+    }
+}
+async function authorityUserIsadmin(uid : any,e : any){
+    let result : any = await store.changeIsAdmin(uid,e)
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
+async function authorityUserIsuploader(uid : any,e : any){
+    let result : any = await store.changeIsUploader(uid,e)
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
+function upload(e : any){
+    let item = e.target.files[0]
+    store.userAvatarData = item
+    //正则表达式，判断每个元素的type属性是否为图片形式，如图
+    if (item.type !== 'image/png' && item.type !== 'image/jpeg') {
+        // 提示只能是图片，return
+        alertMsg.value.addMsg(
+            2,"只能选择图片类型为jpg,png格式"
+        )
+        return;
+    }else if(item.type==undefined){
+        alertMsg.value.addMsg(
+            2,"只能选择图片类型为jpg,png格式"
+        )
+        return;
+    }
+    // 保存下当前 this ，就是vue实例
+    store.filename = item.name
+    // 创建一个FileReader()对象，它里面有个readAsDataURL方法
+    let reader = new FileReader();
+    // readAsDataURL方法可以将上传的图片格式转为base64,然后在存入到图片路径, 
+    //这样就可以上传电脑任意位置的图片                            
+    reader.readAsDataURL(item);
+    //文件读取成功完成时触发
+    reader.addEventListener('load',function(){
+    //  reader.result返回文件的内容。
+    //只有在读取操作完成后，此属性才有效，返回的数据的格式取决于是使用哪种读取方法来执行读取操作的。
+        //给数组添加这个文件也就是图片的内容
+        store.userAvatarTemp=reader.result
+    })
+}
+async function uploadAvatar(){
+    let result : any = await store.uploadUserAvatar()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                2,result.data
+            )
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,result.data
+            )
+        }else if(result.type == 4){
+            alertMsg.value.addMsg(
+                2,result.data
+            )
+        }else if(result.type == 5){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+        }else if(result.type == 6){
+            alertMsg.value.addMsg(
+                2,result.data
+            )
+        }
+    }
+}
 </script>
 
 <style  scoped>

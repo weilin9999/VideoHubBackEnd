@@ -1,44 +1,40 @@
 <template>
-    <div @mouseenter="showUserInfo=true;closeBox=true;pasue = true;isFirstStart=false" @mouseleave="disableInfo()" class="user-box">
-        <div :class="isFirstStart ? 'user-img': closeBox ? 'user-img showImg':'user-img disImg'">
-            <img :src="avatar">
+    <div @mouseenter="data.showUserInfo=true;data.closeBox=true;data.pasue = true;data.isFirstStart=false" @mouseleave="disableInfo()" class="user-box">
+        <div :class="data.isFirstStart ? 'user-img': data.closeBox ? 'user-img showImg':'user-img disImg'">
+            <img :src="props.avatar">
         </div>
-        <div @mouseenter="showUserInfo=true;closeBox=true;pasue = true;" v-if="showUserInfo" :class="closeBox ? 'drop-down-box showInfo':'drop-down-box closeInfo'">
+        <div @mouseenter="data.showUserInfo=true;data.closeBox=true;data.pasue = true;" v-if="data.showUserInfo" :class="data.closeBox ? 'drop-down-box showInfo':'drop-down-box closeInfo'">
             <slot></slot>
         </div>
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'VH-UserInfo',
-    data () {
-        return {
-            showUserInfo:false,
-            showImg:false,
-            closeBox:false,
-            isFirstStart:true,
-        }
-    },
-    props:{
-        avatar: {
-            type: String,
-            default:'/src/assets/img/avatar.png'
-        },
-    },
-    methods:{
-        disableInfo(){
-            this.closeBox=false
-            this.pasue = false
-            setTimeout(() => {
-                if(this.pasue == false){
-                    this.showUserInfo=false
-                }
-            }, 200);
-        }
-    },
+<script lang="ts" setup>
+import { reactive } from 'vue'
+const data = reactive({
+    showUserInfo:false,
+    showImg:false,
+    closeBox:false,
+    isFirstStart:true,
+    pasue: false
+});
+
+const props = defineProps({
+    avatar: {
+        type: String,
+        default:'/src/assets/img/avatar.png'
+    }
 })
+
+function disableInfo(){
+    data.closeBox=false
+    data.pasue = false
+    setTimeout(() => {
+        if(data.pasue == false){
+            data.showUserInfo=false
+        }
+    }, 200);
+}
 </script>
 
 <style  scoped>
@@ -76,11 +72,11 @@ export default defineComponent({
     box-sizing: border-box;
     margin-top: -10px;
     margin-right: 192px;
-    background-color: #fff;
-    box-shadow: 0 0 30px rgb(0 0 0 / 10%);
+    background-color: var(--user-info-drop-down-box-background);
+    box-shadow: 0 0 30px var(--user-info-drop-down-box-shadow);
     border-radius: 8px;
-    border: 1px solid #E3E5E7;
-    color: #18191c;
+    border: 1px solid var(--user-info-drop-down-box-broder);
+    color: var(--user-info-drop-down-box-color);
 }
 
 .showInfo{

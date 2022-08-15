@@ -28,6 +28,7 @@ export const userList = defineStore('userList',{
             userAvatarData: null,
             imgViewSrc:'',
             showImgView:false,
+            filename: '',
         };
     },
    actions: {

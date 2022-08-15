@@ -13,15 +13,15 @@
                 </div>
                 <div v-if="!store.upBox" class="option__group__bot">
                     <VH-Button v-if="store.select != 3" @click="refushData" width="40px" height="32px" button-type="success" style="margin-right: 5px;" title="刷新"><span class="iconfont icon-shuaxin"></span></VH-Button>
-                    <VH-Confirm :disabled="store.isDelete" width="80px" height="32px" desc="是否删除全部文件" @confirm="deleteAllTempFile">
+                    <VH-Confirm :disabled="store.isDelete" width="80px" height="32px" :offset="7" desc="是否删除全部文件" @confirm="deleteAllTempFile">
                         <VH-Button :disabled="store.isDelete" width="80px" height="32px" button-type="danger">全部删除</VH-Button>
                     </VH-Confirm>
                 </div>
                 <div class="option__right__box" v-if="store.select == 1">
-                    <VH-Confirm :disabled="store.isDelete" width="80px" height="32px" color="#67c23a" style="margin-right: 10px;" icon="iconfont icon-cunchu" desc="是否存入所有图片到数据库" @confirm="savePhotoEnter">
+                    <VH-Confirm :disabled="store.isDelete" width="80px" height="32px" :offset="7" color="#67c23a" style="margin-right: 10px;" icon="iconfont icon-cunchu" desc="是否存入所有图片到数据库" @confirm="savePhotoEnter">
                         <VH-Button :disabled="store.isDelete" width="80px" height="32px" button-type="primary" >图片存入</VH-Button>
                     </VH-Confirm>
-                    <VH-Confirm :disabled="store.isDelete" width="80px" height="32px" color="#67c23a" icon="iconfont icon-cunchu" desc="是否存入所有视频到数据库" @confirm="saveVideoCodeEnter">
+                    <VH-Confirm :disabled="store.isDelete" width="80px" height="32px" :offset="7" color="#67c23a" icon="iconfont icon-cunchu" desc="是否存入所有视频到数据库" @confirm="saveVideoCodeEnter">
                         <VH-Button :disabled="store.isDelete" width="80px" height="32px" button-type="success" >视频存入</VH-Button>
                     </VH-Confirm>
                 </div>
@@ -39,309 +39,301 @@
                 </div>
             </div>
             <VH-FileBox :is-waste="store.select==2" :dis-delete="store.isDelete" :up-box="store.upBox" :item-data="store.fileList" @delete="deleteFunc" @recovery="recoveryFile"></VH-FileBox>
-            <Alert-Msg ref="AlertMsg"></Alert-Msg>
+            <Alert-Msg ref="alertMsg"></Alert-Msg>
             <VH-Notification height="70px" :desc="store.descMsg" @close="closeNote" v-if="store.noteDiv"></VH-Notification>
         </div>
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
+import { ref } from 'vue'
 import appStore from '@/store';
 
+document.title = 'VideoHub 后台管理 - 文件列表 - 守护无价数据 ~'
+const store = appStore.fileList
+store.upBox=false
+store.select=1
+store.getFileList()
 
-export default defineComponent({
-    setup(){
-        document.title = 'VideoHub 后台管理 - 文件列表 - 守护无价数据 ~'
-        const store = appStore.fileList
-        store.upBox=false
-        store.select=1
+const fileRef = ref();
+const alertMsg = ref();
+
+function selectFile(){
+    fileRef.value.dispatchEvent(new MouseEvent('click'))
+}
+function upload(e : any){
+    for(let item of e.target.files){
+        let reader = new FileReader();
+        reader.readAsDataURL(item);
+        reader.addEventListener('load',function(){
+            // console.log(item);
+            let json = {'name':item.name,'size':item.size,'date':item.lastModifiedDate,'progress':false,'percent':'0','data':item}
+            let tempIndex = -1
+            store.fileList.filter(function(value,index){
+                if(value.name==json.name){
+                    tempIndex = index
+                }
+            })
+            if(tempIndex == -1){
+                store.fileList.push(json)
+            }else{
+                alertMsg.value.addMsg(
+                    1,"排除了已有同样名称的文件"
+                )
+            }
+        })
+        reader.onprogress = function (evt){
+            // console.log(evt)
+            store.isReadFile=true
+            store.readPercent=0
+            store.loadFileName=item.name
+            store.readPercent= evt.loaded/evt.total*100;
+            if(store.readPercent==100){
+                store.isReadFile=false
+            }
+        }
+    }
+}
+async function deleteFunc(e : any){
+    let site = store.select
+    if(site == 3){
+        store.fileList.splice(e, 1)
+    }else if(site == 1){
+        let result : any =  await store.deleteTempFile(e)
+        if(result != null){
+            if(result.type == 1){
+                alertMsg.value.addMsg(
+                    2,result.data
+                )
+            }else if(result.type == 2){
+                alertMsg.value.addMsg(
+                    1,result.data
+                )
+                store.fileList=[]
+                store.getFileList()
+            }else if(result.type == 3){
+                alertMsg.value.addMsg(
+                    2,result.data
+                )
+            }
+        }
+    }else if(site == 2){
+        let result : any =  await store.deleteWasteFile(e)
+        if(result != null){
+            if(result.type == 1){
+                alertMsg.value.addMsg(
+                    2,result.data
+                )
+            }else if(result.type == 2){
+                alertMsg.value.addMsg(
+                    1,result.data
+                )
+                store.fileList=[]
+                store.getWasteFileList()
+            }else if(result.type == 3){
+                alertMsg.value.addMsg(
+                    2,result.data
+                )
+            }
+        }
+    }
+}
+async function uploadFileFunc(){
+    store.isUpload=true
+    for (let index = 0; index < store.fileList.length; index++) {
+        const element = store.fileList[index];
+        let result : any =  await store.uploadFile(element.data,index)
+        if(result != null){
+            if(result.type == 1){
+                alertMsg.value.addMsg(
+                    2,result.data
+                )
+            }else if(result.type == 2){
+                alertMsg.value.addMsg(
+                    2,result.data
+                )
+            }else if(result.type == 3){
+                alertMsg.value.addMsg(
+                    2,result.data
+                )
+            }else if(result.type == 4){
+                alertMsg.value.addMsg(
+                    1,result.data
+                )
+            }else if(result.type == 5){
+                alertMsg.value.addMsg(
+                    2,result.data
+                )
+            }
+        }
+    }
+    store.isUpload=false
+}
+async function deleteAllTempFile(){
+    let err = 0
+    let msg = ''
+    for (let index = 0; index < store.fileList.length; index++) {
+        const element = store.fileList[index];
+        let result : any =  await store.deleteTempFile(element.name)
+        if(result != null){
+            if(result.type == 1){
+                err ++
+                msg = result.data
+            }else if(result.type == 2){
+                msg = result.data
+            }else if(result.type == 3){
+                err ++
+                msg = result.data
+            }
+        }
+    }
+    if(err != 0){
+        alertMsg.value.addMsg(
+            2,msg
+        )
+    }else{
+        alertMsg.value.addMsg(
+            1,msg
+        )
+        store.fileList=[]
         store.getFileList()
-        return { store }
-    },
-    mounted() {
-        
-    },
-    methods: {
-        selectFile(){
-            this.$refs.fileRef.dispatchEvent(new MouseEvent('click'))
-        },
-        upload(e){
-            for(let item of e.target.files){
-                var _this = this;
-                let reader = new FileReader();
-                reader.readAsDataURL(item);
-                reader.addEventListener('load',function(){
-                    // console.log(item);
-                    let json = {'name':item.name,'size':item.size,'date':item.lastModifiedDate,'progress':false,'percent':'0','data':item}
-                    let tempIndex = -1
-                    _this.store.fileList.filter(function(value,index){
-                        if(value.name==json.name){
-                            tempIndex = index
-                        }
-                    })
-                    if(tempIndex == -1){
-                        _this.store.fileList.push(json)
-                    }else{
-                        _this.$refs.AlertMsg.addMsg(
-                            1,"排除了已有同样名称的文件"
-                        )
-                    }
-                })
-                reader.onprogress = function (evt){
-                    // console.log(evt)
-                    _this.store.isReadFile=true
-                    _this.store.readPercent=0
-                    _this.store.loadFileName=item.name
-                    _this.store.readPercent= evt.loaded/evt.total*100;
-                    if(_this.store.readPercent==100){
-                        _this.store.isReadFile=false
-                    }
-                }
+    }
+}
+async function deleteAllWasteFile(){
+    let err = 0
+    let msg = ''
+    for (let index = 0; index < store.fileList.length; index++) {
+        const element = store.fileList[index];
+        let result : any =  await store.deleteWasteFile(element.name)
+        if(result != null){
+            if(result.type == 1){
+                err ++
+                msg = result.data
+            }else if(result.type == 2){
+                msg = result.data
+            }else if(result.type == 3){
+                err ++
+                msg = result.data
             }
-        },
-        async deleteFunc(e){
-            let site = this.store.select
-            if(site == 3){
-                this.store.fileList.splice(e, 1)
-            }else if(site == 1){
-                let result =  await this.store.deleteTempFile(e)
-                if(result != null){
-                    if(result.type == 1){
-                        this.$refs.AlertMsg.addMsg(
-                            2,result.data
-                        )
-                    }else if(result.type == 2){
-                        this.$refs.AlertMsg.addMsg(
-                            1,result.data
-                        )
-                        this.store.fileList=[]
-                        this.store.getFileList()
-                    }else if(result.type == 3){
-                        this.$refs.AlertMsg.addMsg(
-                            2,result.data
-                        )
-                    }
-                }
-            }else if(site == 2){
-                let result =  await this.store.deleteWasteFile(e)
-                if(result != null){
-                    if(result.type == 1){
-                        this.$refs.AlertMsg.addMsg(
-                            2,result.data
-                        )
-                    }else if(result.type == 2){
-                        this.$refs.AlertMsg.addMsg(
-                            1,result.data
-                        )
-                        this.store.fileList=[]
-                        this.store.getWasteFileList()
-                    }else if(result.type == 3){
-                        this.$refs.AlertMsg.addMsg(
-                            2,result.data
-                        )
-                    }
-                }
-            }
-        },
-        async uploadFileFunc(){
-            this.store.isUpload=true
-            for (let index = 0; index < this.store.fileList.length; index++) {
-                const element = this.store.fileList[index];
-                let result =  await this.store.uploadFile(element.data,index)
-                if(result != null){
-                    if(result.type == 1){
-                        this.$refs.AlertMsg.addMsg(
-                            2,result.data
-                        )
-                    }else if(result.type == 2){
-                        this.$refs.AlertMsg.addMsg(
-                            2,result.data
-                        )
-                    }else if(result.type == 3){
-                        this.$refs.AlertMsg.addMsg(
-                            2,result.data
-                        )
-                    }else if(result.type == 4){
-                        this.$refs.AlertMsg.addMsg(
-                            1,result.data
-                        )
-                    }else if(result.type == 5){
-                        this.$refs.AlertMsg.addMsg(
-                            2,result.data
-                        )
-                    }
-                }
-            }
-            this.store.isUpload=false
-        },
-        async deleteAllTempFile(){
-            let err = 0
-            let msg = ''
-            for (let index = 0; index < this.store.fileList.length; index++) {
-                const element = this.store.fileList[index];
-                let result =  await this.store.deleteTempFile(element.name)
-                if(result != null){
-                    if(result.type == 1){
-                        err ++
-                        msg = result.data
-                    }else if(result.type == 2){
-                        msg = result.data
-                    }else if(result.type == 3){
-                        err ++
-                        msg = result.data
-                    }
-                }
-            }
-            if(err != 0){
-                this.$refs.AlertMsg.addMsg(
-                    2,msg
-                )
-            }else{
-                this.$refs.AlertMsg.addMsg(
-                    1,msg
-                )
-                this.store.fileList=[]
-                this.store.getFileList()
-            }
-        },
-        async deleteAllWasteFile(){
-            let err = 0
-            let msg = ''
-            for (let index = 0; index < this.store.fileList.length; index++) {
-                const element = this.store.fileList[index];
-                let result =  await this.store.deleteWasteFile(element.name)
-                if(result != null){
-                    if(result.type == 1){
-                        err ++
-                        msg = result.data
-                    }else if(result.type == 2){
-                        msg = result.data
-                    }else if(result.type == 3){
-                        err ++
-                        msg = result.data
-                    }
-                }
-            }
-            if(err != 0){
-                this.$refs.AlertMsg.addMsg(
-                    2,msg
-                )
-            }else{
-                this.$refs.AlertMsg.addMsg(
-                    1,msg
-                )
-                this.store.fileList=[]
-                this.store.getWasteFileList()
-            }
-        },
-        async deleteSiteFunc(){
-            let site = this.store.select
-            if(site == 1){
-                await this.deleteAllTempFile()
-            }else if(site == 2){
-                await this.deleteAllWasteFile()
-            }
-        },
-        async refushData(){
-            let site = this.store.select
-            if(site == 1){
-                await this.store.getFileList()
-            }else if(site == 2){
-                await this.store.getWasteFileList()
-            }
-        },
-        async recoveryFile(e){
-            let result =  await this.store.recoveryWasteFile(e)
+        }
+    }
+    if(err != 0){
+        alertMsg.value.addMsg(
+            2,msg
+        )
+    }else{
+        alertMsg.value.addMsg(
+            1,msg
+        )
+        store.fileList=[]
+        store.getWasteFileList()
+    }
+}
+async function deleteSiteFunc(){
+    let site = store.select
+    if(site == 1){
+        await deleteAllTempFile()
+    }else if(site == 2){
+        await deleteAllWasteFile()
+    }
+}
+async function refushData(){
+    let site = store.select
+    if(site == 1){
+        await store.getFileList()
+    }else if(site == 2){
+        await store.getWasteFileList()
+    }
+}
+async function recoveryFile(e : any){
+    let result : any =  await store.recoveryWasteFile(e)
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+            store.fileList=[]
+            store.getWasteFileList()
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,result.data
+            )
+        }
+    }
+}
+function closeNote(){
+    store.noteDiv=false
+}
+async function saveVideoCodeEnter(){
+    if(store.timeTick == null){
+        let time = 3000
+        if(store.fileList.length > 5){
+            time = 6000
+        }
+        store.timeTick = setInterval(async ()=>{
+            let result : any =  await store.saveVideoCode()
             if(result != null){
                 if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
+                    alertMsg.value.addMsg(
                         2,result.data
                     )
                 }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
+                    alertMsg.value.addMsg(
                         1,result.data
                     )
-                    this.store.fileList=[]
-                    this.store.getWasteFileList()
+                    clearInterval(store.timeTick)
+                    clearInterval(store.timeTick)
+                    store.timeTick = null
+                    store.isOnce = false
+                    store.noteDiv=true
+                    store.fileList=[]
+                    store.getFileList()
                 }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
+                    alertMsg.value.addMsg(
                         2,result.data
                     )
                 }
             }
-        },
-        closeNote(){
-            this.store.noteDiv=false
-        },
-        async saveVideoCodeEnter(){
-            if(this.store.timeTick == null){
-                let time = 3000
-                if(this.store.fileList.length > 5){
-                    time = 6000
-                }
-                this.store.timeTick = setInterval(async ()=>{
-                    let result =  await this.store.saveVideoCode()
-                    if(result != null){
-                        if(result.type == 1){
-                            this.$refs.AlertMsg.addMsg(
-                                2,result.data
-                            )
-                        }else if(result.type == 2){
-                            this.$refs.AlertMsg.addMsg(
-                                1,result.data
-                            )
-                            clearInterval(this.store.timeTick)
-                            clearInterval(this.store.timeTick)
-                            this.store.timeTick = null
-                            this.store.isOnce = false
-                            this.store.noteDiv=true
-                            this.store.fileList=[]
-                            this.store.getFileList()
-                        }else if(result.type == 3){
-                            this.$refs.AlertMsg.addMsg(
-                                2,result.data
-                            )
-                        }
-                    }
-                },time)
-            }
-        },
-        async savePhotoEnter(){
-            if(this.store.timeTick == null){
-                let time = 1000
-                if(this.store.fileList.length > 5){
-                    time = 3000
-                }
-                this.store.timeTick = setInterval(async ()=>{
-                    let result =  await this.store.savePhoto()
-                    if(result != null){
-                        if(result.type == 1){
-                            this.$refs.AlertMsg.addMsg(
-                                2,result.data
-                            )
-                        }else if(result.type == 2){
-                            this.$refs.AlertMsg.addMsg(
-                                1,result.data
-                            )
-                            clearInterval(this.store.timeTick)
-                            clearInterval(this.store.timeTick)
-                            this.store.timeTick = null
-                            this.store.isOnce = false
-                            this.store.noteDiv=true
-                            this.store.fileList=[]
-                            this.store.getFileList()
-                        }else if(result.type == 3){
-                            this.$refs.AlertMsg.addMsg(
-                                2,result.data
-                            )
-                        }
-                    }
-                },time)
-            }
-        },
+        },time)
     }
-})
+}
+async function savePhotoEnter(){
+    if(store.timeTick == null){
+        let time = 1000
+        if(store.fileList.length > 5){
+            time = 3000
+        }
+        store.timeTick = setInterval(async ()=>{
+            let result : any =  await store.savePhoto()
+            if(result != null){
+                if(result.type == 1){
+                    alertMsg.value.addMsg(
+                        2,result.data
+                    )
+                }else if(result.type == 2){
+                    alertMsg.value.addMsg(
+                        1,result.data
+                    )
+                    clearInterval(store.timeTick)
+                    clearInterval(store.timeTick)
+                    store.timeTick = null
+                    store.isOnce = false
+                    store.noteDiv=true
+                    store.fileList=[]
+                    store.getFileList()
+                }else if(result.type == 3){
+                    alertMsg.value.addMsg(
+                        2,result.data
+                    )
+                }
+            }
+        },time)
+    }
+}
 </script>
 
 <style scoped>

@@ -1,58 +1,53 @@
 <template>
     <div class="vh__switch__box">
-        <p :style="isSwitch ? '':'color:#409eff;'">否</p> <input type="checkbox" class="switch" v-model="isSwitch" @change="selectCheck" > <p :style="isSwitch ? 'color:#409eff;':''">是</p>
+        <p :style="data.isSwitch ? '':'color:#409eff;'">否</p> <input type="checkbox" class="switch" v-model="data.isSwitch" @change="selectCheck" > <p :style="data.isSwitch ? 'color:#409eff;':''">是</p>
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'VH-Switch',
-    data () {
-        return {
-            isSwitch:false
-        }
+<script lang="ts" setup>
+import { reactive, watch } from 'vue'
+const data = reactive({
+    isSwitch:false
+});
+
+const props = defineProps({
+    activeValue:{
+        type:String,
+        default:'1'
     },
-    props:{
-        activeValue:{
-            type:String,
-            default:'1'
-        },
-        inactiveValue:{
-            type:String,
-            default:'0'
-        },
-        modelValue:{
-            type:null,
-            default: '0'
-        },
+    inactiveValue:{
+        type:String,
+        default:'0'
     },
-    created(){
-        if(this.modelValue != this.activeValue){
-            this.isSwitch = false
-        }else{
-            this.isSwitch= true
-        }
+    modelValue:{
+        type:null,
+        default: '0'
     },
-    watch:{
-        modelValue(news,olds){
-            if(news != this.activeValue){
-                this.isSwitch = false
-            }else{
-                this.isSwitch= true
-            }
-        }
-    },
-    methods:{
-        selectCheck(){
-            if(this.isSwitch){
-                this.$emit('switch',this.activeValue)
-            }else{
-                this.$emit('switch',this.inactiveValue)
-            }
-        }
-    },
-})
+});
+
+const emit = defineEmits(['switch']);
+   
+if(props.modelValue != props.activeValue){
+    data.isSwitch = false
+}else{
+    data.isSwitch= true
+}
+
+watch(()=>props.modelValue,(news)=>{
+    if(news != props.activeValue){
+        data.isSwitch = false
+    }else{
+        data.isSwitch= true
+    }
+});
+
+function selectCheck(){
+    if(data.isSwitch){
+        emit('switch',props.activeValue)
+    }else{
+        emit('switch',props.inactiveValue)
+    }
+}
 </script>
 
 <style  scoped>
@@ -77,7 +72,7 @@ input[type='checkbox'].switch {
     position: relative;
     width: 40px;
     height: 20px;
-    background: #ccc;
+    background: var(--switch-background);
     border-radius: 10px;
     transition: border-color .3s, background-color .3s;
     cursor: pointer;
@@ -89,8 +84,8 @@ input[type='checkbox'].switch::after {
     width: 1rem;
     height: 1rem;
     border-radius: 50%;
-    background: #fff;
-    box-shadow: 0, 0, 2px, #999;
+    background: var(--switch-after-background);
+    box-shadow: 0, 0, 2px, var(--switch-after-border);
     transition: .4s;
     top: 2px;
     position: absolute;
@@ -98,7 +93,7 @@ input[type='checkbox'].switch::after {
 }
 
 input[type='checkbox'].switch:checked {
-    background: rgb(19, 206, 102);
+    background: var(--switch-checked);
 }
 
 input[type='checkbox'].switch:checked::after {

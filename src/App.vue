@@ -6,36 +6,15 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import '@/components/banner.ts'
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-    setup(){
-      
-    },
-    components:{
-      
-    },
-    created(){
-      
-    },
-    mounted(){
-      
-    },
-    watch:{
-      
-    },
-    methods: {
-      
-    }
-})
 </script>
 
 <style scoped>
 .app-main-box{
   width: 100%;
   height: 100%;
+  min-width: 1700px;
   background-color: var(--bg-color);
 }
 .inner-box{

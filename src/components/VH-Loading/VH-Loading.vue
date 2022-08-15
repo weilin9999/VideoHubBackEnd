@@ -4,22 +4,7 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'VH-Loading',
-    data () {
-        return {
-            
-        }
-    },
-    props:{
-        
-    },
-    methods:{
-        
-    },
-})
+<script lang="ts" setup>
 </script>
 
 <style  scoped>
@@ -45,7 +30,7 @@ export default defineComponent({
     stroke-dasharray: 90,150;
     stroke-dashoffset: 0;
     stroke-width: 5;
-    stroke: #409eff;
+    stroke: var(--loadding-path);
     stroke-linecap: round;
 }
 @keyframes loading-rotate{to{transform:rotate(360deg)}}

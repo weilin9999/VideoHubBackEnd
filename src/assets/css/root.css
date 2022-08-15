@@ -1,34 +1,193 @@
 :root {
-    --blue: #007bff;
-    --indigo: #6610f2;
-    --purple: #6f42c1;
-    --pink: #e83e8c;
-    --red: #dc3545;
-    --orange: #fd7e14;
-    --yellow: #ffc107;
-    --green: #28a745;
-    --teal: #20c997;
-    --cyan: #17a2b8;
-    --white: #fff;
-    --gray: #6c757d;
-    --gray-dark: #343a40;
-    --primary: #007bff;
-    --secondary: #6c757d;
-    --success: #28a745;
-    --info: #17a2b8;
-    --warning: #ffc107;
-    --danger: #f56c6c;
-    --light: #f8f9fa;
-    --dark: #343a40;
-    --color-regular: #606266;
-    --bg-color: #f5f5f5;
-    --breakpoint-xs: 0;
-    --breakpoint-sm: 576px;
-    --breakpoint-md: 768px;
-    --breakpoint-lg: 992px;
-    --breakpoint-xl: 1200px;
-    --breakpoint-xxl: 1600px;
-    --font-family-sans-serif: -apple-system, BlinkMacSystemFont;
-    --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas;
+
     --font-family-normal: Microsoft YaHei, Arial, Helvetica, sans-serif !important;
+    --bg-color: #f5f5f5;
+    --white: #fff;
+    --gray-dark: #343a40;
+    --blue: #007bff;
+
+    --admin-app-scrollbar-shadow: rgba(0,0,0,0.5);
+    --admin-app-scrollbar-thumb-background: #999;
+    --admin-app-scrollbar-thumb-border: #fff;
+    --admin-app-scrollbar-thumb-hover: #b8b8b8;
+
+    --success-background: #f0f9eb;
+    --success-border: #e1f3e8;
+    --success-color: #67c23a;
+    --success-focus-color: #95d475;
+    --success-disable-color: #b3e19d;
+    --danger-background: #fef0f0;
+    --danger-border: #fde2e2;
+    --danger-color: #f56c6c;
+    --danger-focus: #f89898;
+    --danger-disable: #fab6b6;
+    --waring-background: #fdf6ec;
+    --waring-border: #faecd8;
+    --waring-color: #e6a32c;
+    --waring-focus: #eebe77;
+    --waring-disable: #f3d19c;
+    --primary-background: #409eff;
+    --primary-tag-border: #d9ecff;
+    --primary-border: #c6e2ff;
+    --primary-color: #ecf5ff;
+    --primary-focus-color: #79bbff;
+    --primary-disable-color:#a0cfff;
+    --info-background:#909399;
+    --info-tag-background:#f4f4f5;
+    --info-broder: #b1b3b8;
+    --info-tag-broder: #e9e9eb;
+    --info-disable: #c9c9cc;
+
+    --box-background: #fff;
+    --box-shadow: rgba(0, 0, 0, .12);
+    --box-title: #E3E5E7;
+
+    --button-done-background: #fff;
+    --button-done-border: #dcdfe6;
+    --button-text-color: #fff;
+    --button-disable-color:#a8abb2;
+    --button-disable-border:#e4e7ed;
+
+    --dialog-end-background: rgba(0, 0, 0, 0.5);
+    --dialog-background: #fff;
+
+    --confirm-background: #fff;
+    --confirm-border: #e4e7ed;
+
+    --file-box-background: #fff;
+    --file-box-title: #718096;
+    --file-box-boz: rgba(132, 133, 141, 0.18);
+    --file-box-progress: #ebeef5;
+    --file-box-bigbox: #e5e7e9;
+    --file-box-text-color: #909399;
+
+    --header-background: #fff;
+    --header-shadow: rgb(0 36 153 / 10%);
+    --header-use-btn: #61666D;
+    --header-use-btn-hover: #E3E5E7;
+    --header-list-btn: #6c757d;
+    --header-list-btn-hover: #000;
+    --header-somly: rgba(0, 0, 0, .12);
+
+    --input-box-border: #dcdfe6;
+    --input-box-border-hover: #409eff;
+    --input-box-avtive: #409eff;
+    --input-box-text-color: #000;
+    --input-box-placeholder: #a8abb2;
+    --input-box-vh: #606266;
+    --input-box-vh-background: #fff;
+
+    --loadding-path: #409eff;
+
+    --menu-box-background: #fff;
+    --menu-box-vh-color: #fff;
+    --menu-box-bule-background: #03A9F4;
+    --menu-box-bule-background-hover: #a0cfff;
+    --menu-box-list: #303133;
+    --menu-box-list-hover: #409eff;
+    --menu-box-list-shadow: rgb(0 36 153 / 10%);
+    --menu-box-active: #03A9F4;
+
+    --notifty-box-background: #fff;
+    --notifty-box-shadow: rgba(0, 0, 0, .12);
+    --notifty-box-close-hover: #409eff;
+
+    --page-bar-a-background: #fff;
+    --page-bar-a-color: #222;
+    --page-bar-a-border: #ddd;
+    --page-bar-a-hover-background: #03A9F4;
+    --page-bar-a-hover-color: #fff;
+    --page-bar-a-hover-border: #00a1d6;
+    --page-bar-a-active-background: #03A9F4;
+    --page-bar-a-active-color: #fff;
+    --page-bar-a-active-border: #00a1d6;
+    --page-bar-i: #99a2aa;
+    --page-bar-input-color: #99a2aa;
+    --page-bar-input-broder: #ccd0d7;
+    --page-bar-input-hover: #409eff;
+    --page-bar-input-focus: #409eff;
+
+    --photo-view-box-background: rgba(0, 0, 0, 0.5);
+    --photo-view-box-control-background: rgba(96, 98, 102,0.8);
+    --photo-view-box-control-color: #fff;
+    --photo-view-box-close-color: #fff;
+    --photo-view-box-colose-background: rgba(96, 98, 102,0.8);
+
+    --select-dropdown-background: #fff;
+    --select-dropdown-border: #dcdfe6;
+    --select-dropdown-hover: #409eff;
+    --select-dropdown-out-background: #fff;
+    --select-dropdown-out-border: #dcdfe6;
+    --select-dropdown-scrollbar-track: rgba(0,0,0,0.3);
+    --select-dropdown-scrollbar-thumb: rgba(0,0,0,0.1);
+    --select-dropdown-scrollbar-shadow: rgba(0,0,0,0.5);
+    --select-li-hover: #fff;
+    --select-li-background: #d9ecff;
+    --select-list-item-text: #606266;
+    --select-search-text: #ccc;
+    --select-search-text-hover: #409eff;
+    --select-search-icon: #aaa;
+    --select-list-search: #fff;
+    --select-list-search-border: #e4e7ed;
+    --select-list-search-shadow: rgba(0, 0, 0, .12);
+    --select-list-search--out-background: #fff;
+    --select-list-search--out-border: #e4e7ed;
+    --select-list-search--out-shadow: rgba(0, 0, 0, .12);
+    --select-squer-spen-background: #ffffff;
+    --select-squer-spen-border: #e4e7ed;
+    --select-squer-spen-out-background: #ffffff;
+    --select-squer-spen-out-border: #e4e7ed;
+    --select-cur-name: #a8abb2;
+    --select-select-text: #409eff;
+    --select-p-text: #606266;
+
+    --switch-background: #ccc;
+    --switch-after-background: #fff;
+    --switch-after-border: #999;
+    --switch-checked: rgb(19, 206, 102);
+
+    --table-color: #606266;
+    --table-border: #808080;
+    --table-td-th-color: #f6f6f6;
+    --table-thead-color: #909399;
+    --table-thead-th-background: #fff;
+    --table-th-color: #909399;
+    --table-tr-background-odd: #fafafa;
+    --table-tr-background-even: #fff;
+    --table-tr-background-hover: #f5f7fa;
+    --table-check-box-after-background: #fff;
+    --table-check-box-after-color: #000;
+    --table-check-box-after-border: #dcdfe6;
+    --table-check-box-checked-after-background: #409eff;
+    --table-check-box-checked-after-border: #409eff;
+    --table-check-box-checked-after-color: #fff;
+    --table-check-box-checked-after-hover-border: #409eff;
+
+    --user-info-drop-down-box-background: #fff;
+    --user-info-drop-down-box-shadow: rgb(0 0 0 / 10%);
+    --user-info-drop-down-box-broder: #E3E5E7;
+    --user-info-drop-down-box-color: #18191c;
+
+    --class-list-box-background: #fff;
+    --class-list-box-other-color: #606266;
+
+    --dashboard-other-color: #E3E5E7;
+
+    --file-list-box-background: #fff;
+    --file-list-box-loading-background: rgba(0, 0, 0, 0.158);
+    --file-list-box-inner-background: #fff;
+    --file-list-box-file-name: #606266;
+    --file-list-box-file-load-bar: #ebeef5;
+    --file-list-box-file-load-value: #409eff;
+
+    --photo-list-box-background: #fff;
+    --photo-list-search-color: #606266;
+
+    --user-list-box-background: #fff;
+    --user-list-other-color: #606266;
+    --user-list-file-color: #fff;
+
+    --video-list-box-background: #fff;
+    --video-list-other-color: #606266;
+
 }

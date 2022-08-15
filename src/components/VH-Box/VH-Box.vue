@@ -7,33 +7,21 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'VH-Box',
-    data () {
-        return {
-            
-        }
+<script lang="ts" setup>
+const props = defineProps({
+    width:{
+        type: String,
+        default: "420px"
     },
-    props:{
-        width:{
-            type: String,
-            default: "420px"
-        },
-        height:{
-            type: String,
-            default: "320px"
-        },
-        description:{
-            type: String,
-            default: ''
-        }
+    height:{
+        type: String,
+        default: "320px"
     },
-    methods:{
-        
-    },
-})
+    description:{
+        type: String,
+        default: ''
+    }
+});
 </script>
 
 <style  scoped>
@@ -42,18 +30,18 @@ export default defineComponent({
     padding: 0;
 }
 .vh-box-main{
-    background-color: #fff;
+    background-color: var(--box-background);
     border-radius: 4px;
     transition: .3x;
 }
 .vh-box-main:hover{
-    box-shadow: 0px 0px 12px rgba(0, 0, 0, .12);;
+    box-shadow: 0px 0px 12px var(--box-shadow);
 }
 
 .vh-box-title{
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
-    border-bottom: 1px solid #E3E5E7;
+    border-bottom: 1px solid var(--box-title);
 }
 </style>

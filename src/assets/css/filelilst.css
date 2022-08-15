@@ -16,7 +16,7 @@
     width: 98%;
     height: auto;
     min-height: 100%;
-    background-color: #fff;
+    background-color: var(--file-list-box-background);
     border-radius: 4px;
     box-sizing: border-box;
     position: relative;
@@ -53,7 +53,7 @@
     margin-top: 20px;
     width: 100%;
     height: calc(100% - 82px);
-    background-color: rgba(0, 0, 0, 0.158);
+    background-color: var(--file-list-box-loading-background);
     position: absolute;
     border-radius: 6px;
     display: flex;
@@ -66,14 +66,14 @@
     flex-direction: column;
     width: 200px;
     padding: 30px;
-    background-color: #fff;
+    background-color: var(--file-list-box-inner-background);
     border-radius: 8px;
 }
 .file__read__file__name{
     display: flex;
     flex-direction: column;
     font-size: 14px;
-    color: #606266;
+    color: var(--file-list-box-file-name);
     padding-bottom: 10px;
 }
 
@@ -95,12 +95,12 @@
 }
  /* 表示总长度背景色 */
 .read__file__loading::-webkit-progress-bar{     
-    background-color: #ebeef5;
+    background-color: var(--file-list-box-file-load-bar);
     border-radius: 0.2rem;
 }
  /* 表示已完成进度背景色 */
 .read__file__loading::-webkit-progress-value{
-    background: #409eff;
+    background: var(--file-list-box-file-load-value);
     border-radius: 0.2rem; 
 }
 

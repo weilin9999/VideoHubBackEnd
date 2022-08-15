@@ -2,102 +2,107 @@
     <div class="header-box">
         <div class="header-inner-box">
             <div class="history-list-box">
-                <div class="hide-box-somly" v-if="hisData[0] != null" :style="'transform: translateX('+tabSite+'px);'"></div>
-                <div class="history-btn-box" v-for="(item,index) in hisData">
+                <div class="hide-box-somly" v-if="data.hisData[0] != null" :style="'transform: translateX('+data.tabSite+'px);'"></div>
+                <div class="history-btn-box" v-for="(item,index) in data.hisData">
                     <p @click="goSite(index,item.path)">{{item.name}}</p>
-                    <span v-if="hisData[1] != null" class="iconfont icon-guanbi" @click="colseSite(index)"></span>
+                    <span v-if="data.hisData[1] != null" class="iconfont icon-guanbi" @click="colseSite(index)"></span>
                 </div>
             </div>
-            <VH-UserInfo class="col-right-ot" :avatar="avatar" >
-                <div class="username">{{username}}</div>
+            <VH-UserInfo class="col-right-ot" :avatar="data.avatar" >
+                <div class="username">{{data.username}}</div>
                 <a  class="user-btn" @click="loginOut"><div class="user-btn-inner"><span class="col-right-6 iconfont icon-tuichu"></span><p>退出登录</p></div><span class="iconfont icon-youxiang"></span></a>
             </VH-UserInfo>
         </div>
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
+import { reactive, onMounted } from 'vue'
 import cookies from 'vue-cookies';
 import config from '@/api/config';
-export default defineComponent({
-    name: 'VH-Header',
-    data () {
-        return {
-            indexEx:0,
-            tabSite:0,
-            hisData: [],
-            avatar:'',
-            username:'管理员',
-        }
-    },
-    props:{
-        listData: {
-            type: Array
-        }
-    },
-    mounted(){
-        setTimeout(() => {
-            const routePath = this.$route.path
-            let temp = null;
-            this.listData.filter(function(value,index){
-                if(value.path==routePath){
-                    temp = value
-                    return
-                }
-            })
-            this.hisData.push(temp)
-        }, 1000);
-    },
-    created() {
-		const origin = cookies.get('origin');
-		this.username = origin.username;
-		this.avatar = config.baseUrl.url +'/file/avatar/'+origin.avatar;
-	},
-    methods:{
-        goSite(e){
-            const site = ((e-1) * 10) + (e * 100) + 7
-            this.tabSite= site
-            this.indexEx=e
-            this.$router.push({ path: this.hisData[e].path })
-        },
-        pushHistory(data){
-            let tempIndex = -1
-            this.hisData.filter(function(value,index){
-                if(value==data){
-                    tempIndex = index
-                }
-            })
-            if(tempIndex != -1){
-                this.goSite(tempIndex)
-            }else{
-                this.hisData.push(data)
-                this.goSite(this.hisData.length-1)
-            }
-        },
-        colseSite(index){
-            if(index==this.indexEx){
-                this.hisData.splice(index,1)
-                this.goSite(this.hisData.length-1)
-            }else{
-                let tempIndex = 0
-                let tempData = this.hisData[this.indexEx]
-                this.hisData.splice(index,1)
-                this.hisData.filter((value,index)=>{
-                    if(value==tempData){
-                        tempIndex = index
-                    }
-                })
-                const site = (tempIndex * 10) + (tempIndex * 100)
-                this.tabSite= site
-            }
-        },
-        loginOut(){
-            cookies.remove('origin');
-            this.$router.push({ path: 'login' })
-        },
-    },
+import { useRouter, useRoute } from 'vue-router';
+
+const router = useRouter();
+const route = useRoute();
+
+const data = reactive({
+    indexSite:0,
+    tabSite:0,
+    hisData: [],
+    avatar:'',
+    username:'管理员'
+});
+const props = defineProps({
+    listData: {
+        type: Array
+    }
+});
+
+
+//获取当前的路由位置插入到History中
+const routePath = route.path
+let temp = null;
+props.listData.filter(function(value,index){
+    if(value.path==routePath){
+        temp = value
+        return
+    }
 })
+data.hisData.push(temp)
+
+//个人信息赋值
+const origin = cookies.get('origin');
+data.username = origin.username;
+data.avatar = config.baseUrl.url +'/file/avatar/'+origin.avatar;
+
+function goSite(e : number){
+    const site = ((e-1) * 10) + (e * 100) + 7
+    data.tabSite= site
+    data.indexSite=e
+    router.push({ path: data.hisData[e].path })
+}
+
+function pushHistory(imData : any){
+    let tempIndex = -1
+    data.hisData.filter(function(value,index){
+        if(value==imData){
+            tempIndex = index
+        }
+    })
+    if(tempIndex != -1){
+        goSite(tempIndex)
+    }else{
+        data.hisData.push(imData)
+        goSite(data.hisData.length-1)
+    }
+}
+
+function colseSite(index : number){
+    if(index==data.indexSite){
+        data.hisData.splice(index,1)
+        goSite(data.hisData.length-1)
+    }else{
+        let tempIndex = 0
+        let tempData = data.hisData[data.indexSite]
+        data.hisData.splice(index,1)
+        data.hisData.filter((value,index)=>{
+            if(value==tempData){
+                tempIndex = index
+            }
+        })
+        data.indexSite = tempIndex;
+        const site = (tempIndex * 10) + (tempIndex * 100)
+        data.tabSite= site
+    }
+}
+
+function loginOut(){
+    cookies.remove('origin');
+    router.push({ path: 'login' });
+}
+
+defineExpose({pushHistory})
+
 </script>
 
 <style  scoped>
@@ -118,9 +123,9 @@ export default defineComponent({
 .header-inner-box{
     width: 98%;
     height: 65px;
-    background-color: #fff;
+    background-color: var(--header-background);
     border-radius: 4px;
-    box-shadow: 0 5px 12px rgb(0 36 153 / 10%);
+    box-shadow: 0 5px 12px var(--header-shadow);
     animation: showBox 0.3s ease-out;
     display: flex;
     align-items: center;
@@ -155,14 +160,14 @@ export default defineComponent({
     margin-bottom: 2px;
     padding: 10px 14px;
     border-radius: 8px;
-    color: #61666D;
+    color: var(--header-use-btn);
     font-size: 14px;
     cursor: pointer;
     transition: background-color .3s;
     user-select: none;
 }
 .user-btn:hover{
-    background-color: #E3E5E7;
+    background-color: var(--header-use-btn-hover);
 }
 .user-btn .user-btn-inner{
     display: flex;
@@ -190,10 +195,10 @@ export default defineComponent({
     margin-right: 10px;
     border-radius: 6px;
     z-index: 2;
-    color: #6c757d;
+    color: var(--header-list-btn);
 }
 .history-list-box .history-btn-box:hover{
-    color: #000;
+    color: var(--header-list-btn-hover);
 }
 .history-list-box .history-btn-box p{
     cursor: pointer;
@@ -213,8 +218,8 @@ export default defineComponent({
     user-select: none;
 }
 .history-list-box .history-btn-box span:hover{
-    background-color: #f56c6c;
-    color: #fff;
+    background-color: var(--danger-color);
+    color: var(--header-background);
 }
 .hide-box-somly{
     position: absolute;
@@ -222,8 +227,8 @@ export default defineComponent({
     width: 100px;
     height: 45px;
     border-radius: 6px;
-    background-color: #fff;
-    box-shadow: 0px 0px 12px rgba(0, 0, 0, .12);
+    background-color: var(--header-background);
+    box-shadow: 0px 0px 12px var(--header-somly);
     transition: all .2s;
     -webkit-transition: all .2s;
 }

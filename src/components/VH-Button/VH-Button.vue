@@ -4,76 +4,69 @@
     </button>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'VH-Button',
-    data () {
-        return {
-            buttonClass:'',
+<script lang="ts" setup>
+import { reactive } from 'vue'
+const data = reactive({
+    buttonClass:''
+});
+const props = defineProps({
+    width: {
+        type: String,
+        default: '90px'
+    },
+    height: {
+        type: String,
+        default: '45px'
+    },
+    buttonType:{
+        type: String,
+        default: ''
+    },
+    disabled:{
+        type: Boolean,
+        default: false
+    }
+});
+function buttonStyle(){
+    if(props.buttonType==''){
+        if(props.disabled==true){
+            data.buttonClass = 'button-box-norl default-disable'
+        }else{
+            data.buttonClass = 'button-box'
         }
-    },
-    props:{
-        width: {
-            type: String,
-            default: '90px'
-        },
-        height: {
-            type: String,
-            default: '45px'
-        },
-        buttonType:{
-            type: String,
-            default: ''
-        },
-        disabled:{
-            type: Boolean,
-            default: false
+    }else if(props.buttonType=='primary'){
+        if(props.disabled==true){
+            data.buttonClass = 'button-box-norl primary-disable'
+        }else{
+            data.buttonClass = 'button-box primary'
         }
-    },
-    methods:{
-        buttonStyle(){
-            if(this.buttonType==''){
-                if(this.disabled==true){
-                    this.buttonClass = 'button-box-norl default-disable'
-                }else{
-                    this.buttonClass = 'button-box'
-                }
-            }else if(this.buttonType=='primary'){
-                if(this.disabled==true){
-                    this.buttonClass = 'button-box-norl primary-disable'
-                }else{
-                    this.buttonClass = 'button-box primary'
-                }
-            }else if(this.buttonType=='success'){
-                if(this.disabled==true){
-                    this.buttonClass = 'button-box-norl success-disable'
-                }else{
-                    this.buttonClass = 'button-box success'
-                }
-            }else if(this.buttonType=='info'){
-                if(this.disabled==true){
-                    this.buttonClass = 'button-box-norl info-disable'
-                }else{
-                    this.buttonClass = 'button-box info'
-                }
-            }else if(this.buttonType=='waring'){
-                if(this.disabled==true){
-                    this.buttonClass = 'button-box-norl waring-disable'
-                }else{
-                    this.buttonClass = 'button-box waring'
-                }
-            }else if(this.buttonType=='danger'){
-                if(this.disabled==true){
-                    this.buttonClass = 'button-box-norl danger-disable'
-                }else{
-                    this.buttonClass = 'button-box danger'
-                }
-            }
-            return this.buttonClass
-        },
-    },
-})
+    }else if(props.buttonType=='success'){
+        if(props.disabled==true){
+            data.buttonClass = 'button-box-norl success-disable'
+        }else{
+            data.buttonClass = 'button-box success'
+        }
+    }else if(props.buttonType=='info'){
+        if(props.disabled==true){
+            data.buttonClass = 'button-box-norl info-disable'
+        }else{
+            data.buttonClass = 'button-box info'
+        }
+    }else if(props.buttonType=='waring'){
+        if(props.disabled==true){
+            data.buttonClass = 'button-box-norl waring-disable'
+        }else{
+            data.buttonClass = 'button-box waring'
+        }
+    }else if(props.buttonType=='danger'){
+        if(props.disabled==true){
+            data.buttonClass = 'button-box-norl danger-disable'
+        }else{
+            data.buttonClass = 'button-box danger'
+        }
+    }
+    return data.buttonClass
+}
 </script>
 
 <style  scoped>
@@ -97,17 +90,17 @@ export default defineComponent({
     user-select: none;
     vertical-align: middle;
     -webkit-appearance: none;
-    background-color: #fff;
-    border: 1px solid #dcdfe6;
-    border-color: #dcdfe6;
+    background-color: var(--button-done-background);
+    border: 1px solid var(--button-done-border);
+    border-color: var(--button-done-border);
     padding: 8px 15px;
     font-size: 14px;
     border-radius: 4px;
 }
 .button-box:hover, .button-box:focus, .button-box:active {
-    color: #409EFF;
-    border-color: #c6e2ff;
-    background-color: #ecf5ff;
+    color: var(--primary-background);
+    border-color: var(--primary-border);
+    background-color: var(--primary-color);
     outline: none;
 }
 .button-box-norl{
@@ -126,113 +119,113 @@ export default defineComponent({
     user-select: none;
     vertical-align: middle;
     -webkit-appearance: none;
-    background-color: #fff;
-    border: 1px solid #dcdfe6;
-    border-color: #dcdfe6;
+    background-color: var(--button-done-background);
+    border: 1px solid var(--button-done-border);
+    border-color: var(--button-done-border);
     padding: 8px 15px;
     font-size: 14px;
     border-radius: 4px;
 }
 .default-disable{
-    color: #a8abb2;
+    color: var(--button-disable-color);
     cursor: not-allowed;
     background-image: none;
-    background-color: #fff;
-    border-color: #e4e7ed;
+    background-color: var(--button-done-background);
+    border-color: var(--button-disable-border);
 }
 .primary{
-    color: #fff;
-    background-color: #409eff;
-    border: 1px solid #dcdfe6;
-    border-color: #409eff; 
+    color: var(--button-text-color);
+    background-color: var(--primary-background);
+    border: 1px solid var(--button-done-border);
+    border-color: var(--primary-background); 
 }
 .primary:hover, .primary:focus, .primary:active{
-    color: #fff;
-    border-color: #79bbff;
-    background-color: #79bbff;
+    color: var(--button-text-color);
+    border-color: var(--primary-focus-color);
+    background-color: var(--primary-focus-color);
     outline: none;
 }
 .primary-disable{
-    color: #fff;
+    color: var(--button-text-color);
     cursor: not-allowed;
     background-image: none;
-    background-color: #a0cfff;
-    border-color: #a0cfff;
+    background-color: var(--primary-disable-color);
+    border-color: var(--primary-disable-color);
 }
 .success{
-    color: #fff;
-    background-color: #67c23a;
-    border: 1px solid #dcdfe6;
-    border-color: #67c23a; 
+    color: var(--button-text-color);
+    background-color: var(--success-color);
+    border: 1px solid var(--button-done-border);
+    border-color: var(--success-color); 
 }
 .success:hover, .success:focus, .success:active{
-    color: #fff;
-    border-color: #95d475;
-    background-color: #95d475;
+    color: var(--button-text-color);
+    border-color: var(--success-focus-color);
+    background-color: var(--success-focus-color);
     outline: none;
 }
 .success-disable{
-    color: #fff;
+    color: var(--button-text-color);
     cursor: not-allowed;
     background-image: none;
-    background-color: #b3e19d;
-    border-color: #b3e19d;
+    background-color: var(--success-disable-color);
+    border-color: var(--success-disable-color);
 }
 .info{
-    color: #fff;
-    background-color: #909399;
-    border: 1px solid #dcdfe6;
-    border-color: #909399; 
+    color: var(--button-text-color);
+    background-color: var(--info-background);
+    border: 1px solid var(--button-done-border);
+    border-color: var(--info-background); 
 }
 .info:hover, .info:focus, .info:active{
-    color: #fff;
-    border-color: #b1b3b8;
-    background-color: #b1b3b8;
+    color: var(--button-text-color);
+    border-color: var(--info-broder);
+    background-color: var(--info-broder);
     outline: none;
 }
 .info-disable{
-    color: #fff;
+    color: var(--button-text-color);
     cursor: not-allowed;
     background-image: none;
-    background-color: #c9c9cc;
-    border-color: #c9c9cc;
+    background-color: var(--info-disable);
+    border-color: var(--info-disable);
 }
 .waring{
-    color: #fff;
-    background-color: #e6a23c;
-    border: 1px solid #dcdfe6;
-    border-color: #e6a23c; 
+    color: var(--button-text-color);
+    background-color: var(--waring-color);
+    border: 1px solid var(--button-done-border);
+    border-color: var(--waring-color); 
 }
 .waring:hover, .waring:focus, .waring:active{
-    color: #fff;
-    border-color: #eebe77;
-    background-color: #eebe77;
+    color: var(--button-text-color);
+    border-color: var(--waring-focus);
+    background-color: var(--waring-focus);
     outline: none;
 }
 .waring-disable{
-    color: #fff;
+    color: var(--button-text-color);
     cursor: not-allowed;
     background-image: none;
-    background-color: #f3d19c;
-    border-color: #f3d19c;
+    background-color: var(--waring-disable);
+    border-color: var(--waring-disable);
 }
 .danger{
-    color: #fff;
-    background-color: #f56c6c;
-    border: 1px solid #dcdfe6;
-    border-color: #f56c6c; 
+    color: var(--button-text-color);
+    background-color: var(--danger-color);
+    border: 1px solid var(--button-done-border);
+    border-color: var(--danger-color); 
 }
 .danger:hover, .danger:focus, .danger:active{
-    color: #fff;
-    border-color: #f89898;
-    background-color: #f89898;
+    color: var(--button-text-color);
+    border-color: var(--danger-focus);
+    background-color: var(--danger-focus);
     outline: none;
 }
 .danger-disable{
-    color: #fff;
+    color: var(--button-text-color);
     cursor: not-allowed;
     background-image: none;
-    background-color: #fab6b6;
-    border-color: #fab6b6;
+    background-color: var(--danger-disable);
+    border-color: var(--danger-disable);
 }
 </style>

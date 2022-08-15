@@ -1,50 +1,42 @@
 <template>
-    <div :style="'width:'+width+';height:'+height+';'" class="notification__box__note note__open">
+    <div :style="'width:'+props.width+';height:'+props.height+';'" class="notification__box__note note__open">
         <div class="notification__box__note__close"><span class="closebtn iconfont icon-guanbi" @click="close"></span></div>
         <div class="note__inner__box__text">
-            <span :style="'color:'+color+';'" :class="'iconmr '+icon"></span>
-            <p>{{desc}}</p>
+            <span :style="'color:'+props.color+';'" :class="'iconmr '+props.icon"></span>
+            <p>{{props.desc}}</p>
         </div>
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'VH-Notification',
-    data () {
-        return {
-            
-        }
+<script lang="ts" setup>
+const props = defineProps({
+    width:{
+        type:String,
+        default:'260px'
     },
-    props:{
-        width:{
-            type:String,
-            default:'260px'
-        },
-        height:{
-            type:String,
-            default:'100px'
-        },
-        desc:{
-            type:String,
-            default:''
-        },
-        icon:{
-            type:String,
-            default:'iconfont icon-lijiqueren'
-        },
-        color:{
-            type:String,
-            default: '#67c23a'
-        }
+    height:{
+        type:String,
+        default:'100px'
     },
-    methods:{
-        close(){
-            this.$emit('close','')
-        }
+    desc:{
+        type:String,
+        default:''
     },
-})
+    icon:{
+        type:String,
+        default:'iconfont icon-lijiqueren'
+    },
+    color:{
+        type:String,
+        default: '#67c23a'
+    }
+});
+
+const emit = defineEmits(['close']);
+
+function close(){
+    emit('close','')
+}
 </script>
 
 <style  scoped>
@@ -53,8 +45,8 @@ export default defineComponent({
     padding: 0;
 }
 .notification__box__note{
-    background-color: #fff;
-    box-shadow: 0px 0px 12px rgba(0, 0, 0, .12);
+    background-color: var(--notifty-box-background);
+    box-shadow: 0px 0px 12px var(--notifty-box-shadow);
     position: fixed;
     right: 20px;
     top: 120px;
@@ -72,7 +64,7 @@ export default defineComponent({
     cursor: pointer;
 }
 .closebtn:hover{
-    color: #409eff;
+    color: var(--notifty-box-close-hover);
 }
 .note__inner__box__text{
     display: flex;

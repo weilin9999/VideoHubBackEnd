@@ -1,164 +1,165 @@
 <template>
-	<div ref="selectDoc" :style="[isShow ? 'border: 1px solid #409eff;':'','width: '+width+'px;']" :class="outOfSide ? 'vh_dropdown_out_of_side':'vh-dropdown'">
-		<div @mouseenter="showColse=true" @mouseleave="showColse=false" class="cur-name" ><p @click="timeOutClose" style="width: 100%;" :class="select>-1 ? 'select-p-text':''">{{retValue()}}</p> <span v-if="select != -1 && showColse && closeEvent" @click="cleanSearch" class="onSelect iconfont icon-close-o"></span> <span v-else @click="timeOutClose" :class="isShow ? 'onSelect iconfont icon-31xiala':'driSelect iconfont icon-31xiala'"></span> </div>
-		<div :class="[isShow?'on':'',isopen ? 'openSelect':'disSelect',outOfSide ? 'list-and-search_out_of_side':'list-and-search' ]" :style="'width:'+width+'px'">
-			<div :class="outOfSide ? 'squerSpen_out_of_side':'squerSpen'"></div>
-			<div class="search-module clearfix" v-show="isNeedSearch">
-				<input class="search-text" @input='search' :placeholder="placeholder" />
+	<div ref="selectDoc" :style="[data.isShow ? 'border: 1px solid #409eff;':'','width: '+props.width+'px;']" :class="data.outOfSide ? 'vh_dropdown_out_of_side':'vh-dropdown'">
+		<div @mouseenter="data.showColse=true" @mouseleave="data.showColse=false" class="cur-name" ><p @click="timeOutClose" style="width: 100%;" :class="data.select>-1 ? 'select-p-text':''">{{data.current}}</p> <span v-if="data.select != -1 && data.showColse && closeEvent" @click="cleanSearch" class="onSelect iconfont icon-close-o"></span> <span v-else @click="timeOutClose" :class="data.isShow ? 'onSelect iconfont icon-31xiala':'driSelect iconfont icon-31xiala'"></span> </div>
+		<div :class="[data.isShow?'on':'',data.isopen ? 'openSelect':'disSelect',data.outOfSide ? 'list-and-search_out_of_side':'list-and-search' ]" :style="'width:'+props.width+'px'">
+			<div :class="data.outOfSide ? 'squerSpen_out_of_side':'squerSpen'"></div>
+			<div class="search-module clearfix" v-show="props.isNeedSearch">
+				<input class="search-text" @input='search' :placeholder="props.placeholder" />
 			</div>
 			<ul class="list-module">
-				<li :title="labelFunc(item)" v-for ="(item,index) in datalist" @click="clickItem(item,index)" :key="index">
-					<span :class="select == index ? 'list-item-text select-text':'list-item-text'">{{labelFunc(item)}}</span>
+				<li :title="labelFunc(item)" v-for ="(item,index) in data.datalist" @click="clickItem(item,index)" :key="index">
+					<span :class="data.select == index ? 'list-item-text select-text':'list-item-text'">{{labelFunc(item)}}</span>
 				</li>
 			</ul>
-			<div class="tip-nodata" v-show="searchValue.length && !datalist.length">未找到数据</div>
+			<div class="tip-nodata" v-show="data.searchValue.length && !data.datalist.length">未找到数据</div>
 		</div>
 	</div>
 </template>
  
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-  name:"VH-Select",
-  data(){
-		return {
-			isopen:false,
-			searchValue: '',
-			current: this.curData,
-			datalist:[],
-			isShow:false,
-			select:-1,
-			showColse:false,
-			outOfSide:false,
-		}
- 	},
-  props:{
-		modelValue:null,
-		label:null,
-		vhKey:null,
-		curData:String,
-		itemData:Array,
-		isNeedSearch:{
-			type: Boolean,
-			default: true
-		},
-		placeholder:{
-			type: String,
-			default: '搜索' 
-		},
-		width:{
-			type: String,
-			default: '150' 
-		},
-		placeholder:{
-			type: String,
-			default: '请选择' 
-		},
-		closeEvent:{
-			type: Boolean,
-			default: true
-		}
-  	},
-  watch:{
-        itemData(news,olds){
-            this.datalist = news
-        },
-		modelValue(news,olds){
-			if(news == ''){
-				this.current = '请选择'
-				this.select = -1
-				return
-			}
-			for (let index = 0; index < this.datalist.length; index++) {
-				let key = this.datalist[index][this.vhKey]
-				if(this.modelValue == key){
-					this.current = this.datalist[index][this.label]
-					this.select = index
-					return
-				}else{
-					this.current = '请选择'
-					this.select = -1
-				}
-			}
-		}
-    },
-  created(){
-		this.datalist = this.itemData;
-		document.addEventListener('click', (e) => {
-			if (!this.$el.contains(e.target)){
-				this.isopen = false;
-				setTimeout(()=>{this.isShow = false},100)
-			}
-		}, false)
-  	},
-  mounted(){
-		for (let index = 0; index < this.datalist.length; index++) {
-			let key = this.datalist[index][this.vhKey]
-			if(this.modelValue == key){
-				this.current = this.datalist[index][this.label]
-				this.select = index
-				return
-			}else{
-				this.current = '请选择'
-				this.select = -1
-			}
-		}
-    },
-  methods:{
-		retValue(){
-			if(this.current == ''){
-				return this.placeholder
-			}else{
-				return this.current
-			}
-		},
-		labelFunc(item){
-			return item[this.label]
-		},
-		search(e){
-			this.searchValue = e.target.value;
-			this.datalist = this.itemData.filter((item)=>{
-				return item[this.label].indexOf(this.searchValue) != -1;
-			});
-		},
-		clickItem(item,index){
-			this.isShow = false;
-			let value = item[this.label]
-			let key = item[this.vhKey]
-			this.current = value;
-			this.select = index;
-			this.$emit('update:modelValue',key);
-			this.$emit('change',key);
-		},
-		timeOutClose(){
-			if(this.isShow == false){
-				var windowTop = window.innerHeight
-                var scrollTops = document.body.scrollTop
-				var windowHeight = windowTop+scrollTops
-				let documtTop = this.$refs.selectDoc.getClientRects()
-				if((documtTop[0].top+200) > windowHeight){
-					this.outOfSide=true
-					this.isopen = true;
-					this.isShow = true;
-				}else{
-					this.isopen = true;
-					this.isShow = true;
-				}
-			}else{
-				this.isopen = false;
-				setTimeout(()=>{this.isShow = false},100)
-			}
-		},
-		cleanSearch(){
-			this.isShow = false
-			this.isopen = false
-			this.current = '';
-			this.select = -1;
-			this.$emit('update:modelValue','');
-			this.$emit('change','');
+<script lang="ts" setup>
+import { reactive, watch, ref } from 'vue'
+
+const selectDoc = ref();
+
+const props = defineProps({
+	modelValue:null,
+	label:null,
+	vhKey:null,
+	curData:String,
+	itemData:Array,
+	isNeedSearch:{
+		type: Boolean,
+		default: true
+	},
+	placeholder:{
+		type: String,
+		default: '搜索' 
+	},
+	width:{
+		type: String,
+		default: '150' 
+	},
+	placeholder:{
+		type: String,
+		default: '请选择' 
+	},
+	closeEvent:{
+		type: Boolean,
+		default: true
+	}
+});
+
+const emit = defineEmits(['update:modelValue','change']);
+
+const data = reactive({
+	isopen:false,
+	searchValue: '',
+	current: props.curData,
+	datalist:[],
+	isShow:false,
+	select:-1,
+	showColse:false,
+	outOfSide:false
+})
+
+document.addEventListener('click', (e) => {
+	if(selectDoc.value){
+		if (!selectDoc.value.contains(e.target)){
+			data.isopen = false;
+			setTimeout(()=>{data.isShow = false},100)
 		}
 	}
-})
+}, false)
+
+data.datalist = props.itemData;
+for (let index = 0; index < data.datalist.length; index++) {
+	let key = data.datalist[index][props.vhKey]
+	if(props.modelValue == key){
+		data.current = data.datalist[index][props.label]
+		data.select = index
+		break
+	}else{
+		data.current = '请选择'
+		data.select = -1
+	}
+}
+if(!data.current){
+	data.current = '请选择'
+	data.select = -1
+}
+
+watch(()=>props.itemData,(news)=>{
+	data.datalist = news
+});
+
+watch(()=>props.modelValue,(news)=>{
+	if(news == ''){
+		data.current = '请选择'
+		data.select = -1
+		return
+	}
+	for (let index = 0; index < data.datalist.length; index++) {
+		let key = data.datalist[index][props.vhKey]
+		if(props.modelValue == key){
+			data.current = data.datalist[index][props.label]
+			data.select = index
+			break
+		}else{
+			data.current = '请选择'
+			data.select = -1
+		}
+	}
+});
+
+function labelFunc(item : any){
+	return item[props.label]
+}
+
+function search(e : any){
+	data.searchValue = e.target.value;
+	data.datalist = props.itemData.filter((item)=>{
+		return item[props.label].indexOf(data.searchValue) != -1;
+	});
+}
+
+function clickItem(item : any,index : number){
+	data.isShow = false;
+	let value = item[props.label]
+	let key = item[props.vhKey]
+	data.current = value;
+	data.select = index;
+	emit('update:modelValue',key);
+	emit('change',key);
+}
+
+function timeOutClose(){
+	if(data.isShow == false){
+		var windowTop = window.innerHeight
+		var scrollTops = document.body.scrollTop
+		var windowHeight = windowTop+scrollTops
+		let documtTop = selectDoc.value.getClientRects()
+		if((documtTop[0].top+200) > windowHeight){
+			data.outOfSide=true
+			data.isopen = true;
+			data.isShow = true;
+		}else{
+			data.isopen = true;
+			data.isShow = true;
+		}
+	}else{
+		data.isopen = false;
+		setTimeout(()=>{data.isShow = false},100)
+	}
+}
+function cleanSearch(){
+	data.isShow = false
+	data.isopen = false
+	data.current = '';
+	data.select = -1;
+	emit('update:modelValue','');
+	emit('change','');
+}
+
 </script>
  
 <style scoped>
@@ -168,13 +169,13 @@ export default defineComponent({
 	}
 	.vh-dropdown {
 		z-index:10;
-        background-color: #fff;
+        background-color: var(--select-dropdown-background);
 		cursor: pointer;
 		user-select:none;
 		-webkit-user-select:none; 
 		position: relative;
 		border-radius: 4px;
-		border: 1px solid #dcdfe6 ;
+		border: 1px solid var(--select-dropdown-border) ;
 		display: flex;
 		flex-direction: column;
   		align-items: center;
@@ -184,13 +185,13 @@ export default defineComponent({
 	}
 	.vh_dropdown_out_of_side{
 		z-index:10;
-        background-color: #fff;
+        background-color: var(--select-dropdown-out-background);
 		cursor: pointer;
 		user-select:none;
 		-webkit-user-select:none; 
 		position: relative;
 		border-radius: 4px;
-		border: 1px solid #dcdfe6 ;
+		border: 1px solid var(--select-dropdown-out-border) ;
 		display: flex;
   		align-items: center;
 		box-sizing: border-box;
@@ -199,7 +200,7 @@ export default defineComponent({
 		flex-direction: column-reverse;
 	}
 	.vh-dropdown:hover{
-		border: 1px solid #409eff;
+		border: 1px solid var(--select-dropdown-hover);
 	}
     input::-webkit-input-placeholder{
 		font-size: 14px;
@@ -221,14 +222,14 @@ export default defineComponent({
 	}
 	
 	.list-module::-webkit-scrollbar-track {
-		-webkit-box-shadow:inset006pxrgba(0,0,0,0.3);
+		-webkit-box-shadow:inset006px var(--select-dropdown-scrollbar-track);
 		border-radius:10px;
 	}
 	
 	.list-module::-webkit-scrollbar-thumb {
 		border-radius:10px;
-		background:rgba(0,0,0,0.1);
-		-webkit-box-shadow:inset006pxrgba(0,0,0,0.5);
+		background:var(--select-dropdown-scrollbar-thumb);
+		-webkit-box-shadow:inset006px var(--select-dropdown-scrollbar-shadow);
 	}
 
     li {
@@ -246,12 +247,12 @@ export default defineComponent({
     }
     li:hover {
         cursor:pointer;
-        color: #fff;
-        background: #d9ecff;
+        color: var(--select-li-hover);
+        background: var(--select-li-background);
     }
 	.list-item-text{
 		width: 100%;
-		color: #606266;
+		color: var(--select-list-item-text);
 		overflow: hidden;
 		text-overflow:ellipsis;
 		white-space: nowrap
@@ -274,37 +275,37 @@ export default defineComponent({
         -moz-box-sizing:border-box;
         -webkit-box-sizing:border-box;
 		text-align: center;
-		border-bottom: 1px solid #ccc;
+		border-bottom: 1px solid var(--select-search-text);
 		border-top-left-radius: 8px;
 		border-top-right-radius: 8px;
     }
 	.search-text:hover{
-		border-bottom: 1px solid #409eff;
+		border-bottom: 1px solid var(--select-search-text-hover);
 	}
     .search-icon {
         position: absolute;
         top: 24%;
         right: 0.5em;
-        color: #aaa;
+        color: var(--select-search-icon);
     }
 	.list-and-search{
 		display: none;
-		background: #fff;
-		border: 1px solid #e4e7ed;
+		background: var(--select-list-search);
+		border: 1px solid var(--select-list-search-border);
 		position: absolute;
 		border-radius: 8px;
 		margin-top: 40px;
-		box-shadow: 0px 0px 12px rgba(0, 0, 0, .12);
+		box-shadow: 0px 0px 12px var(--select-list-search-shadow);
 		padding: 0px 0px 5px;
 	}
 	.list-and-search_out_of_side{
 		display: none;
-		background: #fff;
-		border: 1px solid #e4e7ed;
+		background: var(--select-list-search--out-background);
+		border: 1px solid var(--select-list-search--out-border);
 		position: absolute;
 		border-radius: 8px;
 		margin-bottom: 40px;
-		box-shadow: 0px 0px 12px rgba(0, 0, 0, .12);
+		box-shadow: 0px 0px 12px var(--select-list-search--out-shadow);
 		padding: 0px 0px 10px;
 	}
 	.squerSpen{
@@ -318,9 +319,9 @@ export default defineComponent({
 		z-index: 1;
 		content: " ";
 		transform: rotate(45deg);
-		background: #ffffff;
+		background: var(--select-squer-spen-background);
 		box-sizing: border-box;
-		border: 1px solid #e4e7ed;
+		border: 1px solid var(--select-squer-spen-border);
 	}
 	.squerSpen_out_of_side{
 		user-select: none;
@@ -333,9 +334,9 @@ export default defineComponent({
 		z-index: 1;
 		content: " ";
 		transform: rotate(45deg);
-		background: #ffffff;
+		background: var(--select-squer-spen-out-background);
 		box-sizing: border-box;
-		border: 1px solid #e4e7ed;
+		border: 1px solid var(--select-squer-spen-out-border);
 	}
     .on{
         display: flex;
@@ -348,7 +349,7 @@ export default defineComponent({
 		height: 32px;
 		line-height: 31px;
 		position: relative;
-		color: #a8abb2;
+		color: var(--select-cur-name);
 		box-sizing: border-box;
 		-moz-box-sizing:border-box;
         -webkit-box-sizing:border-box;
@@ -415,9 +416,9 @@ export default defineComponent({
 		}
 	}
 	.select-text{
-		color: #409eff;
+		color: var(--select-select-text);
 	}
 	.select-p-text{
-		color: #606266;
+		color: var(--select-p-text);
 	}
 </style>

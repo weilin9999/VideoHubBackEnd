@@ -16,7 +16,7 @@
 .photo-list-box{
     width: 98%;
     height: auto;
-    background-color: #fff;
+    background-color: var(--photo-list-box-background);
     border-radius: 4px;
     box-sizing: border-box;
     margin-bottom: 50px;
@@ -56,7 +56,7 @@
     align-items: center;
 }
 .photo-seach-group p{
-    color: #606266;
+    color: var(--photo-list-search-color);
     font-size: 13px;
     margin-right: 10px;
     margin-left: 10px;

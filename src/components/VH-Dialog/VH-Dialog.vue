@@ -1,9 +1,9 @@
 <template>
     <div class="dialog-box" :style="'position: '+position+';'">
-        <div :class="closeBox ? 'black-box dialog____anmin___colse__back__bord':'black-box dialog____anmin___come__back__bord'"  :style="'position: '+position+';'" @click="closeBg"></div>
-        <div :style="'width:'+width+'px;height:'+height+'px;'" :class="closeBox ? 'dialog dialog____anmin___colse':'dialog dialog____anmin___come'">
+        <div :class="data.closeBox ? 'black-box dialog____anmin___colse__back__bord':'black-box dialog____anmin___come__back__bord'"  :style="'position: '+props.position+';'" @click="closeBg"></div>
+        <div :style="'width:'+props.width+'px;height:'+props.height+'px;'" :class="data.closeBox ? 'dialog dialog____anmin___colse':'dialog dialog____anmin___come'">
             <div class="dialog__box___title">
-                <p>{{titleText}}</p>
+                <p>{{props.titleText}}</p>
                 <span class="closebtn iconfont icon-guanbi" @click="close"></span>
             </div>
             <slot></slot>
@@ -11,50 +11,46 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'VH-Dialog',
-    data () {
-        return {
-            closeBox: false
-        }
+<script lang="ts" setup>
+import { reactive } from 'vue'
+const data = reactive({closeBox: false});
+const props = defineProps({
+    width:{
+        type: String,
+        default: '800' 
     },
-    props:{
-        width:{
-			type: String,
-			default: '800' 
-		},
-        height:{
-			type: String,
-			default: '460' 
-		},
-        position:{
-            type: String,
-			default: 'fixed'
-        },
-        bgClose:{
-            type: Boolean,
-			default: true
-        },
-        titleText:{
-            type: String,
-			default: '标题'
-        }
+    height:{
+        type: String,
+        default: '460' 
     },
-    methods:{
-        close(){
-            setTimeout(()=>{this.closeBox = true},50)
-			setTimeout(()=>{this.$emit('close',true)},250)
-        },
-        closeBg(){
-            if(this.bgClose){
-                setTimeout(()=>{this.closeBox = true},50)
-			    setTimeout(()=>{this.$emit('close',true)},250)
-            }
-        }
+    position:{
+        type: String,
+        default: 'fixed'
     },
-})
+    bgClose:{
+        type: Boolean,
+        default: true
+    },
+    titleText:{
+        type: String,
+        default: '标题'
+    }
+});
+
+const emit = defineEmits(['close']);
+
+function close(){
+    setTimeout(()=>{data.closeBox = true},50);
+    setTimeout(()=>{emit('close',true)},250);
+}
+function closeBg(){
+    if(props.bgClose){
+        setTimeout(()=>{data.closeBox = true},50)
+        setTimeout(()=>{emit('close',true)},250)
+    }
+}
+
+defineExpose ({ close })
 </script>
 
 <style  scoped>
@@ -75,11 +71,11 @@ export default defineComponent({
 .black-box{
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--dialog-end-background);
     z-index: 201;
 }
 .dialog-box .dialog{
-    background-color: #fff;
+    background-color: var(--dialog-background);
     border-radius: 4px;
     z-index: 202;
 }
@@ -92,12 +88,12 @@ export default defineComponent({
     cursor: pointer;
 }
 .closebtn:hover{
-    color: #409eff;
+    color: var(--primary-background);
 }
 .dialog__box___title{
     width: 100%;
     height: 35px;
-    border-bottom: 1px solid #E3E5E7;
+    border-bottom: 1px solid var(--box-title);
     display: flex;
     align-items: center;
     justify-content: space-between;

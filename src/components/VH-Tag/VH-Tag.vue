@@ -1,57 +1,51 @@
 <template>
-    <div :style="'font-size: '+fontSize+';width: '+width+';height: '+height+';'" :class="retStyle()">
-        {{desc}}
+    <div :style="'font-size: '+props.fontSize+';width: '+props.width+';height: '+props.height+';'" :class="retStyle()">
+        {{props.desc}}
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'VH-Tag',
-    data () {
-        return {
-            classStyle:'VH-Tag-primary-box'
-        }
+<script lang="ts" setup>
+import { reactive } from 'vue'
+const data = reactive({
+    classStyle:'VH-Tag-primary-box'
+});
+const props = defineProps({
+    desc:{
+        type:null,
+        default: '无标签'
     },
-    props:{
-        desc:{
-            type:null,
-            default: '无标签'
-        },
-        width:{
-            type:String,
-            default: 'auto'
-        },
-        height:{
-            type:String,
-            default: '24px'
-        },
-        fontSize:{
-            type:String,
-            default: '12px'
-        },
-        type:{
-            type:String,
-            default: ''
-        }
+    width:{
+        type:String,
+        default: 'auto'
     },
-    methods:{
-        retStyle(){
-            if(this.type == 'primary'){
-                this.classStyle='VH-Tag-primary-box'
-            }else if(this.type == 'danger'){
-                this.classStyle='VH-Tag-danger-box'
-            }else if(this.type == 'waring'){
-                this.classStyle='VH-Tag-waring-box'
-            }else if(this.type == 'success'){
-                this.classStyle='VH-Tag-success-box'
-            }else{
-                this.classStyle='VH-Tag-info-box'
-            }
-            return this.classStyle
-        }
+    height:{
+        type:String,
+        default: '24px'
     },
-})
+    fontSize:{
+        type:String,
+        default: '12px'
+    },
+    type:{
+        type:String,
+        default: ''
+    }
+});
+
+function retStyle(){
+    if(props.type == 'primary'){
+        data.classStyle='VH-Tag-primary-box'
+    }else if(props.type == 'danger'){
+        data.classStyle='VH-Tag-danger-box'
+    }else if(props.type == 'waring'){
+        data.classStyle='VH-Tag-waring-box'
+    }else if(props.type == 'success'){
+        data.classStyle='VH-Tag-success-box'
+    }else{
+        data.classStyle='VH-Tag-info-box'
+    }
+    return data.classStyle
+}
 </script>
 
 <style  scoped>
@@ -72,9 +66,9 @@ export default defineComponent({
     border-style: solid;
     border-radius: 4px;
     box-sizing: border-box;
-    color: #909399;
-    border-color: #e9e9eb;
-    background-color: #f4f4f5;
+    color: var(--info-background);
+    border-color: var(--info-tag-broder);
+    background-color: var(--info-tag-background);
 }
 .VH-Tag-success-box{
     width: auto;
@@ -89,9 +83,9 @@ export default defineComponent({
     border-style: solid;
     border-radius: 4px;
     box-sizing: border-box;
-    color: #67c23a;
-    border-color: #e1f3d8;
-    background-color: #f0f9eb;
+    color: var(--success-color);
+    border-color: var(--success-border);
+    background-color: var(--success-background);
 }
 .VH-Tag-waring-box{
     width: auto;
@@ -106,9 +100,9 @@ export default defineComponent({
     border-style: solid;
     border-radius: 4px;
     box-sizing: border-box;
-    color: #e6a23c;
-    border-color: #faecd8;
-    background-color: #fdf6ec;
+    color: var(--waring-color);
+    border-color: var(--waring-border);
+    background-color: var(--waring-background);
 }
 .VH-Tag-danger-box{
     width: auto;
@@ -123,9 +117,9 @@ export default defineComponent({
     border-style: solid;
     border-radius: 4px;
     box-sizing: border-box;
-    color: #f56c6c;
-    border-color: #fde2e2;
-    background-color: #fef0f0;
+    color: var(--danger-color);
+    border-color: var(--danger-border);
+    background-color: var(--danger-background);
 }
 .VH-Tag-primary-box{
     width: auto;
@@ -140,8 +134,8 @@ export default defineComponent({
     border-style: solid;
     border-radius: 4px;
     box-sizing: border-box;
-    color: #409eff;
-    border-color: #d9ecff;
-    background-color: #ecf5ff;
+    color: var(--primary-background);
+    border-color: var(--primary-tag-border);
+    background-color: var(--primary-color);
 }
 </style>

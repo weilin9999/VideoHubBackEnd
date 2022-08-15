@@ -1,46 +1,31 @@
 <template>
   <div class="app-main-box">
     <div class="inner-box">
-      <VH-Menu :list-data="store.menu" @change="changeRouter"></VH-Menu>
+      <VH-Menu :list-data="menu" @change="changeRouter"></VH-Menu>
       <div class="right-box">
-        <VH-Header ref="header" :list-data="store.menu"></VH-Header>
+        <VH-Header ref="header" :list-data="menu"></VH-Header>
         <router-view></router-view>
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import '@/components/banner.ts'
 import appStore from '@/store';
-import { defineComponent } from 'vue'
+import { ref } from 'vue'
 import VHMenu from '@/components/VH-Menu/VH-Menu.vue';
 import VHHeader from '@/components/VH-Header/VH-Header.vue';
 
-export default defineComponent({
-    setup(){
-      const store = appStore.Application
-      return { store }
-    },
-    components:{
-      VHMenu,
-      VHHeader,
-    },
-    created(){
-      
-    },
-    mounted(){
-      
-    },
-    watch:{
-      
-    },
-    methods: {
-      changeRouter(e){
-        this.$refs.header.pushHistory(e)
-      },
-    }
-})
+const store = appStore.Application;
+
+const { menu } = store;
+
+const header = ref();
+
+function changeRouter(e : any){
+  header.value.pushHistory(e);
+}
 </script>
 
 <style scoped>
@@ -88,19 +73,19 @@ body,html,#app{
 }
 
 ::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset006px rgba(0,0,0,0.5);
+  -webkit-box-shadow: inset006px var(--admin-app-scrollbar-shadow);
   border-radius:3px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background:#999;
+  background: var(--admin-app-scrollbar-thumb-background);
   border-radius: 7px;
-  outline: 2px solid #fff;
+  outline: 2px solid var(--admin-app-scrollbar-thumb-border);
   outline-offset: -2px;
-  border: 2px solid #fff;
-  -webkit-box-shadow: inset006px rgba(0,0,0,0.5);
+  border: 2px solid var(--admin-app-scrollbar-thumb-border);
+  -webkit-box-shadow: inset006px var(--admin-app-scrollbar-shadow);
 }
 ::-webkit-scrollbar-thumb:hover{
-  background:#b8b8b8;
+  background:var(--admin-app-scrollbar-thumb-hover);
 }
 </style>

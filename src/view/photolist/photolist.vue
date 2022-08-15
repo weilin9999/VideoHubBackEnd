@@ -4,7 +4,7 @@
             <div class="photo-list-control">
                 <div class="photo-list___control__a">
                     <VH-Button width="65px" height="32px" @click="store.resFush" style="margin-left: 10px;margin-right: 10px;" button-type="success"><span class="iconfont icon-shuaxin"></span>刷新</VH-Button>
-                    <VH-Confirm :disabled="store.multData[0]==null" width="65px" height="25px" @confirm="deleteGroup" style="font-size: 12px;color:#606266;" desc="是否删除选中数据 ？">
+                    <VH-Confirm :disabled="store.multData[0]==null" width="65px" height="32px" :offset="7" @confirm="deleteGroup" style="font-size: 12px;color:#606266;" desc="是否删除选中数据 ？">
                         <VH-Button :disabled="store.multData[0]==null" width="65px" height="32px" button-type="danger" style="font-size: 12px;" ><span class="mini-icon_col iconfont icon-shanchu"></span> 删除</VH-Button>
                     </VH-Confirm>
                 </div>
@@ -40,7 +40,7 @@
             </div>
 
             <!-- Alert -->
-            <AlertMsg ref="AlertMsg"></AlertMsg>
+            <AlertMsg ref="alertMsg"></AlertMsg>
 
             <!-- photo -->
             <VH-Photo v-if="store.showImgView" :img-src="store.imgViewSrc" @close="store.showImgView=false"></VH-Photo>
@@ -48,80 +48,73 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
+import { ref } from 'vue'
 import appStore from '@/store';
 
-export default defineComponent({
-    setup(){
-        document.title = 'VideoHub 后台管理 - 分类管理 - 守护无价数据 ~'
-        const store = appStore.photoList
-        store.getPhotoData(store.curPage,store.pageSize)
-        return { store }
-    },
-    mounted() {
+document.title = 'VideoHub 后台管理 - 分类管理 - 守护无价数据 ~'
+const store = appStore.photoList
+store.getPhotoData(store.curPage,store.pageSize)
 
-    },
-    methods: {
-        goWhere(e){
-			let where = e.where
-			if(where == 'zero'){
-				this.$refs.AlertMsg.addMsg(
-					2,"搜索值只能大于1"
-				)
-			}else if(where == 'error'){
-				this.$refs.AlertMsg.addMsg(
-					2,"输入值有误"
-				)
-			}else if(where =='nosearch'){
-				this.$refs.AlertMsg.addMsg(
-					2,"输入的值大于总页数"
-				)
-			}else if(where >= 1 ){
-				this.store.goWhere(e)
-			}
-		},
-        retTimeDate(e){
-            return new Date(e).toLocaleString()
-        },
-        async deleteGroup() {
-            let result = await this.store.deleteMultFunc()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
-        async deletePhoto(e) {
-            let result = await this.store.deleteFunc(e)
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
+const alertMsg = ref();
+
+function goWhere(e : any){
+    let where = e.where
+    if(where == 'zero'){
+        alertMsg.value.addMsg(
+            2,"搜索值只能大于1"
+        )
+    }else if(where == 'error'){
+        alertMsg.value.addMsg(
+            2,"输入值有误"
+        )
+    }else if(where =='nosearch'){
+        alertMsg.value.addMsg(
+            2,"输入的值大于总页数"
+        )
+    }else if(where >= 1 ){
+        store.goWhere(e)
     }
-})
+}
+function retTimeDate(e : any){
+    return new Date(e).toLocaleString()
+}
+async function deleteGroup() {
+    let result : any = await store.deleteMultFunc()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
+async function deletePhoto(e : any) {
+    let result : any = await store.deleteFunc(e)
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
 </script>
 
 <style  scoped>

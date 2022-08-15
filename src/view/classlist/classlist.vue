@@ -18,7 +18,7 @@
                     <div class="control__inner__left">
                         <VH-Button width="65px" height="32px" @click="store.resFush" style="margin-left: 10px;" button-type="success"><span class="iconfont icon-shuaxin"></span>刷新</VH-Button>
                         <VH-Button :disabled="store.multData[0]==null" @click="store.openEditMultFunc" width="65px" height="32px" style="font-size: 12px;margin-right: 10px;margin-left: 10px;" button-type="primary"><span class="mini-icon_col iconfont icon-xiugai"></span> 编辑</VH-Button>
-                        <VH-Confirm :disabled="store.multData[0]==null" width="65px" height="25px" @confirm="deleteGroup" style="font-size: 12px;color:#606266;" desc="是否删除选中数据 ？">
+                        <VH-Confirm :disabled="store.multData[0]==null" width="65px" height="32px" :offset="7" @confirm="deleteGroup" style="font-size: 12px;color:#606266;" desc="是否删除选中数据 ？">
                             <VH-Button :disabled="store.multData[0]==null" width="65px" height="32px" button-type="danger" style="font-size: 12px;" ><span class="mini-icon_col iconfont icon-shanchu"></span> 删除</VH-Button>
                         </VH-Confirm>
                     </div>
@@ -105,180 +105,176 @@
             </VH-Dialog>
 
             <!-- Alert -->
-            <AlertMsg ref="AlertMsg"></AlertMsg>
+            <AlertMsg ref="alertMsg"></AlertMsg>
         </div>
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
+import { ref } from 'vue'
 import appStore from '@/store';
 
-export default defineComponent({
-    setup(){
-        document.title = 'VideoHub 后台管理 - 分类管理 - 守护无价数据 ~'
-        const store = appStore.classList
-        store.getClassData('','',store.curPage,store.pageSize)
-        return { store }
-    },
-    mounted() {
+document.title = 'VideoHub 后台管理 - 分类管理 - 守护无价数据 ~'
+const store = appStore.classList
+store.getClassData('','',store.curPage,store.pageSize)
 
-    },
-    methods: {
-        goWhere(e){
-			let where = e.where
-			if(where == 'zero'){
-				this.$refs.AlertMsg.addMsg(
-					2,"搜索值只能大于1"
-				)
-			}else if(where == 'error'){
-				this.$refs.AlertMsg.addMsg(
-					2,"输入值有误"
-				)
-			}else if(where =='nosearch'){
-				this.$refs.AlertMsg.addMsg(
-					2,"输入的值大于总页数"
-				)
-			}else if(where >= 1 ){
-				this.store.goWhere(e)
-			}
-		},
-        coloseEdit(){
-            this.$refs.dialog_edit.close()
-        },
-        coloseAddbox(){
-            this.$refs.dialog_add.close()
-            this.store.addForm = {}
-        },
-        coloseMultEdit(){
-            this.$refs.dialog_mult_edit.close()
-            this.store.resFushNowPage()
-        },
-        retTimeDate(e){
-            return new Date(e).toLocaleString()
-        },
-        async deleteGroup() {
-            let result = await this.store.deleteMultFunc()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
-        async deleteClass(e) {
-            let result = await this.store.deleteFunc(e)
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
-        async editClassSure() {
-            let result = await this.store.editSure()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                    this.coloseEdit()
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
-        async addClassSure() {
-            let result = await this.store.addSure()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                    this.coloseAddbox()
-                }else if(result.type == 4){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }else if(result.type == 5){
-                    this.$refs.AlertMsg.addMsg(
-                        2,result.data
-                    )
-                }
-            }
-        },
-        async editClassSureMult(){
-            let result = await this.store.editSure()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                    this.coloseMultEdit()
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
-        async nextEditFun() {
-            let result = await this.store.editMultSure()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                    this.store.editMultNextFunc()
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
+const alertMsg = ref();
+const dialog_edit = ref();
+const dialog_add = ref();
+const dialog_mult_edit = ref();
+
+function goWhere(e){
+    let where = e.where
+    if(where == 'zero'){
+        alertMsg.value.addMsg(
+            2,"搜索值只能大于1"
+        )
+    }else if(where == 'error'){
+        alertMsg.value.addMsg(
+            2,"输入值有误"
+        )
+    }else if(where =='nosearch'){
+        alertMsg.value.addMsg(
+            2,"输入的值大于总页数"
+        )
+    }else if(where >= 1 ){
+        store.goWhere(e)
     }
-})
+}
+function coloseEdit(){
+    dialog_edit.value.close()
+}
+function coloseAddbox(){
+    dialog_add.value.close()
+    store.addForm = {}
+}
+function coloseMultEdit(){
+    dialog_mult_edit.value.close()
+    store.resFushNowPage()
+}
+function retTimeDate(e : any){
+    return new Date(e).toLocaleString()
+}
+async function deleteGroup() {
+    let result : any = await store.deleteMultFunc()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
+async function deleteClass(e : any) {
+    let result : any = await store.deleteFunc(e)
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
+async function editClassSure() {
+    let result : any = await store.editSure()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+            coloseEdit()
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
+async function addClassSure() {
+    let result : any = await store.addSure()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }if(result.type == 2){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+            coloseAddbox()
+        }else if(result.type == 4){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }else if(result.type == 5){
+            alertMsg.value.addMsg(
+                2,result.data
+            )
+        }
+    }
+}
+async function editClassSureMult(){
+    let result : any = await store.editSure()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+            coloseMultEdit()
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
+async function nextEditFun() {
+    let result : any = await store.editMultSure()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+            store.editMultNextFunc()
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
 </script>
 
 <style  scoped>

@@ -21,7 +21,7 @@
                 <div class="video-list___control__a" style="margin-top: 20px;">
                     <VH-Button width="65px" height="32px" @click="store.resFush" style="margin-left: 10px;" button-type="success"><span class="iconfont icon-shuaxin"></span>刷新</VH-Button>
                     <VH-Button :disabled="store.multData[0]==null" @click="store.openEditMultFunc" width="65px" height="32px" style="font-size: 12px;margin-right: 10px;margin-left: 10px;" button-type="primary"><span class="mini-icon_col iconfont icon-xiugai"></span> 编辑</VH-Button>
-                    <VH-Confirm :disabled="store.multData[0]==null" width="65px" height="25px" @confirm="deleteGroup" style="font-size: 12px;color:#606266;" desc="是否删除选中数据 ？">
+                    <VH-Confirm :disabled="store.multData[0]==null" width="65px" height="32px" :offset="7" @confirm="deleteGroup" style="font-size: 12px;color:#606266;" desc="是否删除选中数据 ？">
                         <VH-Button :disabled="store.multData[0]==null" width="65px" height="32px" button-type="danger" style="font-size: 12px;" ><span class="mini-icon_col iconfont icon-shanchu"></span> 删除</VH-Button>
                     </VH-Confirm>
                     <div class="video-seach-group">
@@ -116,7 +116,7 @@
             </VH-Dialog>
 
             <!-- Alert -->
-            <AlertMsg ref="AlertMsg"></AlertMsg>
+            <AlertMsg ref="alertMsg"></AlertMsg>
 
             <!-- photo -->
             <VH-Photo v-if="store.showImgView" :img-src="store.imgViewSrc" @close="store.showImgView=false"></VH-Photo>
@@ -124,163 +124,158 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
+import { ref } from 'vue'
 import appStore from '@/store';
 
-export default defineComponent({
-    setup(){
-        document.title = 'VideoHub 后台管理 - 视频管理 - 守护无价数据 ~'
-        const store = appStore.videoList
-        store.getVideoData('','','',store.curPage,store.pageSize)
-        store.getClassData()
-        return { store }
-    },
-    mounted() {
+const alertMsg = ref();
+const dialog_edit = ref();
+const dialog_mult_edit = ref();
 
-    },
-    methods: {
-        goWhere(e){
-			let where = e.where
-			if(where == 'zero'){
-				this.$refs.AlertMsg.addMsg(
-					2,"搜索值只能大于1"
-				)
-			}else if(where == 'error'){
-				this.$refs.AlertMsg.addMsg(
-					2,"输入值有误"
-				)
-			}else if(where =='nosearch'){
-				this.$refs.AlertMsg.addMsg(
-					2,"输入的值大于总页数"
-				)
-			}else if(where >= 1 ){
-				this.store.goWhere(e)
-			}
-		},
-        coloseEdit(){
-            this.$refs.dialog_edit.close()
-        },
-        coloseMultEdit(){
-            this.$refs.dialog_mult_edit.close()
-            this.store.resFushNotClass()
-        },
-        retTimeDate(e){
-            return new Date(e).toLocaleString()
-        },
-        async deleteGroup() {
-            let result = await this.store.deleteMultFunc()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
-        async deleteVideo(e) {
-            let result = await this.store.deleteFunc(e)
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
-        async editVideoSureMult(){
-            let result = await this.store.editSure()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                    this.coloseMultEdit()
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
-        async editVideoSure() {
-            let result = await this.store.editSure()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                    this.coloseEdit()
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
-        async nextEditFun() {
-            let result = await this.store.editMultSure()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                    this.store.editMultNextFunc()
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
-        async editVideoCidMult() {
-            let result = await this.store.batchCid()
-            if(result != null){
-                if(result.type == 1){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"异常错误："+result.data
-                    )
-                }else if(result.type == 2){
-                    this.$refs.AlertMsg.addMsg(
-                        1,result.data
-                    )
-                }else if(result.type == 3){
-                    this.$refs.AlertMsg.addMsg(
-                        2,"未知错误："+result.data
-                    )
-                }
-            }
-        },
+document.title = 'VideoHub 后台管理 - 视频管理 - 守护无价数据 ~'
+const store = appStore.videoList
+store.getVideoData('','','',store.curPage,store.pageSize)
+store.getClassData()
+
+function goWhere(e : any){
+    let where = e.where
+    if(where == 'zero'){
+        alertMsg.value.addMsg(
+            2,"搜索值只能大于1"
+        )
+    }else if(where == 'error'){
+        alertMsg.value.addMsg(
+            2,"输入值有误"
+        )
+    }else if(where =='nosearch'){
+        alertMsg.value.addMsg(
+            2,"输入的值大于总页数"
+        )
+    }else if(where >= 1 ){
+        store.goWhere(e)
     }
-})
+}
+function coloseEdit(){
+    dialog_edit.value.close()
+}
+function coloseMultEdit(){
+    dialog_mult_edit.value.close()
+    store.resFushNotClass()
+}
+function retTimeDate(e : any){
+    return new Date(e).toLocaleString()
+}
+async function deleteGroup() {
+    let result : any = await store.deleteMultFunc()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
+async function deleteVideo(e : any) {
+    let result : any = await store.deleteFunc(e)
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
+async function editVideoSureMult(){
+    let result : any = await store.editSure()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+            coloseMultEdit()
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
+async function editVideoSure() {
+    let result : any = await store.editSure()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+            coloseEdit()
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
+async function nextEditFun() {
+    let result : any = await store.editMultSure()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+            store.editMultNextFunc()
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
+async function editVideoCidMult() {
+    let result : any = await store.batchCid()
+    if(result != null){
+        if(result.type == 1){
+            alertMsg.value.addMsg(
+                2,"异常错误："+result.data
+            )
+        }else if(result.type == 2){
+            alertMsg.value.addMsg(
+                1,result.data
+            )
+        }else if(result.type == 3){
+            alertMsg.value.addMsg(
+                2,"未知错误："+result.data
+            )
+        }
+    }
+}
 </script>
 
 <style  scoped>

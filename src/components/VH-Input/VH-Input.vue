@@ -1,146 +1,141 @@
 <template>
-    <div :style="'width:'+width+';'" :class="retClass()">
-        <span :class="icon=='' ? '': isAvative ? 'col-right avtive-color '+icon : 'col-right '+icon "></span>
+    <div :style="'width:'+props.width+';'" :class="retClass()">
+        <span :class="props.icon=='' ? '': data.isAvative ? 'col-right avtive-color '+props.icon : 'col-right '+props.icon "></span>
         <!-- textarea -->
-        <textarea :style="'height:'+rowHeight+'px'" ref="textarea" v-if="inputType == 'textarea'" :rows="row" tabindex="0" autocomplete="off"  class="textarea__box__vh" :disabled="disabled" autoComplete='true' v-model="valuee"  @input="changeInput" :placeholder="placeholder" @focus="isAvative=true" @blur="isAvative=false"></textarea>
+        <textarea :style="'height:'+data.rowHeight+'px'" ref="textarea" v-if="props.inputType == 'textarea'" :rows="props.row" tabindex="0" autocomplete="off"  class="textarea__box__vh" :disabled="props.disabled" autoComplete='true' v-model="data.valuee"  @input="changeInput" :placeholder="props.placeholder" @focus="data.isAvative=true" @blur="data.isAvative=false"></textarea>
         <!-- input -->
-        <input v-else :disabled="disabled" class="input-inner" autoComplete='true' v-model="valuee"  @input="changeInput" :type="inputType" :placeholder="placeholder" @focus="isAvative=true" @blur="isAvative=false">
-        <p v-if="tipShow" class="info-box danger-text">{{msg}}</p>
+        <input v-else :disabled="props.disabled" class="input-inner" autoComplete='true' v-model="data.valuee"  @input="changeInput" :type="props.inputType" :placeholder="props.placeholder" @focus="data.isAvative=true" @blur="data.isAvative=false">
+        <p v-if="data.tipShow" class="info-box danger-text">{{props.msg}}</p>
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'VH-Input',
-    data () {
-        return {
-            isAvative:false,
-            valuee:this.modelValue,
-            border_class:'',
-            tipShow: this.tip,
-            rowHeight: this.textHeight,
-        }
-    },
-    props:{
-        width: {
-            type: String,
-            default: '220px'
-        },
-        inputType: {
-          type: String,
-          default: 'text'  
-        },
-        placeholder: {
-            type: String,
-            default: ''  
-        },
-        icon: {
-            type: String,
-            default: ''
-        },
-        modelValue:{
-            type: null,
-            default: ''
-        },
-        msg: {
-            type: String,
-            default: ''
-        },
-        tip: {
-            type: Boolean,
-            default: false
-        },
-        inputEvent:{
-            type: String,
-            default: ''
-        },
-        disabled:{
-            type: Boolean,
-            default: false
-        },
-        row:{
-            type: String,
-            default: '1'
-        },
-        textHeight:{
-            type: String,
-            default: '34'
-        }
-    },
-    watch: {
-        tip(news,old){
-            this.tipShow=news
-        },
-        modelValue(news,old){
-            this.valuee = news
-        }
-    },
-    created(){
+<script lang="ts" setup>
+import { reactive, watch, ref } from 'vue'
 
+const textarea = ref();
+
+const props = defineProps({
+    width: {
+        type: String,
+        default: '220px'
     },
-    mounted(){
-        
+    inputType: {
+        type: String,
+        default: 'text'  
     },
-    methods:{
-        changeInput(){
-            if(this.inputEvent == 'onlynumber'){
-                let temp = this.valuee
-                try {
-                    this.valuee = Number(temp.replace(/^(0+)|[^\d]+/g,''))
-                } catch (error) {
-                    this.valuee = Number(temp.toString().replace(/^(0+)|[^\d]+/g,''))
-                }
-            }
-            if(this.inputType == 'textarea'){
-                this.getHeight()
-            }
-            this.tipShow=false
-            this.$emit('update:modelValue',this.valuee);
-        },
-        retClass(){
-            if(this.isAvative){
-                if(this.tipShow){
-                    if(this.inputType == 'textarea'){
-                        this.border_class = 'input-box-normal-textarea danger'
-                    }else{
-                        this.border_class = 'input-box-normal danger'
-                    }
-                }else{
-                    if(this.inputType == 'textarea'){
-                        this.border_class = 'input-box-textarea avtive'
-                    }else{
-                        this.border_class = 'input-box avtive'
-                    }
-                }
-            }else{
-                if(this.tipShow){
-                    if(this.inputType == 'textarea'){
-                        this.border_class = 'input-box-normal-textarea danger'
-                    }else{
-                        this.border_class = 'input-box-normal danger'
-                    }
-                }else{
-                    if(this.inputType == 'textarea'){
-                        this.border_class = 'input-box-textarea'
-                    }else{
-                        this.border_class = 'input-box'
-                    }
-                }
-            }
-            return this.border_class
-        },
-        getHeight() {
-            let textArea = this.$refs.textarea;
-            textArea.style.height = textArea.scrollHeight + "px";
-            // if (textArea.scrollHeight < 100) {
-            //     textArea.style.height = textArea.scrollHeight + "px";
-            // } else {
-            //     textArea.style.height = 100 + "px";
-            // }
+    placeholder: {
+        type: String,
+        default: ''  
+    },
+    icon: {
+        type: String,
+        default: ''
+    },
+    modelValue:{
+        type: null,
+        default: ''
+    },
+    msg: {
+        type: String,
+        default: ''
+    },
+    tip: {
+        type: Boolean,
+        default: false
+    },
+    inputEvent:{
+        type: String,
+        default: ''
+    },
+    disabled:{
+        type: Boolean,
+        default: false
+    },
+    row:{
+        type: String,
+        default: '1'
+    },
+    textHeight:{
+        type: String,
+        default: '34'
+    }
+});
+
+const emit = defineEmits(['update:modelValue'])
+
+const data = reactive({
+    isAvative:false,
+    valuee:props.modelValue,
+    border_class:'',
+    tipShow: props.tip,
+    rowHeight: props.textHeight
+});
+
+watch(() => props.tip, (newValue) => {
+    data.tipShow=newValue
+});
+watch(() => props.modelValue, (newValue) => {
+    data.valuee=newValue
+});
+
+function changeInput(){
+    if(props.inputEvent == 'onlynumber'){
+        let temp = data.valuee
+        try {
+            data.valuee = Number(temp.replace(/^(0+)|[^\d]+/g,''))
+        } catch (error) {
+            data.valuee = Number(temp.toString().replace(/^(0+)|[^\d]+/g,''))
         }
-    },
-})
+    }
+    if(props.inputType == 'textarea'){
+        getHeight()
+    }
+    data.tipShow=false
+    emit('update:modelValue',data.valuee);
+}
+
+function retClass(){
+    if(data.isAvative){
+        if(data.tipShow){
+            if(props.inputType == 'textarea'){
+                data.border_class = 'input-box-normal-textarea danger'
+            }else{
+                data.border_class = 'input-box-normal danger'
+            }
+        }else{
+            if(props.inputType == 'textarea'){
+                data.border_class = 'input-box-textarea avtive'
+            }else{
+                data.border_class = 'input-box avtive'
+            }
+        }
+    }else{
+        if(data.tipShow){
+            if(props.inputType == 'textarea'){
+                data.border_class = 'input-box-normal-textarea danger'
+            }else{
+                data.border_class = 'input-box-normal danger'
+            }
+        }else{
+            if(props.inputType == 'textarea'){
+                data.border_class = 'input-box-textarea'
+            }else{
+                data.border_class = 'input-box'
+            }
+        }
+    }
+    return data.border_class
+}
+
+function getHeight() {
+    let textArea = textarea;
+    textArea.value.style.height = textArea.value.scrollHeight + "px";
+    // if (textArea.scrollHeight < 100) {
+    //     textArea.style.height = textArea.scrollHeight + "px";
+    // } else {
+    //     textArea.style.height = 100 + "px";
+    // }
+}
 </script>
 
 <style  scoped>
@@ -150,7 +145,7 @@ export default defineComponent({
 }
 .input-box{
     border-radius: 4px;
-    border: 1px solid #dcdfe6;
+    border: 1px solid var(--input-box-border);
     padding: 0 15px;
     display: flex;
     align-items: center;
@@ -159,11 +154,11 @@ export default defineComponent({
     transition: border-color .25s cubic-bezier(.71,-.46,.29,1.46),background-color .25s cubic-bezier(.71,-.46,.29,1.46),outline .25s cubic-bezier(.71,-.46,.29,1.46);
 }
 .input-box:hover{
-    border: 1px solid #409eff;
+    border: 1px solid var(--input-box-border-hover);
 }
 .input-box-textarea{
     border-radius: 4px;
-    border: 1px solid #dcdfe6;
+    border: 1px solid var(--input-box-border);
     display: flex;
     align-items: center;
     flex-direction: row;
@@ -171,11 +166,11 @@ export default defineComponent({
     transition: border-color .25s cubic-bezier(.71,-.46,.29,1.46),background-color .25s cubic-bezier(.71,-.46,.29,1.46),outline .25s cubic-bezier(.71,-.46,.29,1.46);
 }
 .input-box-textarea:hover{
-    border: 1px solid #409eff;
+    border: 1px solid var(--input-box-border-hover);
 }
 .input-box-normal{
     border-radius: 4px;
-    border: 1px solid #dcdfe6;
+    border: 1px solid var(--input-box-border);
     padding: 0 15px;
     display: flex;
     align-items: center;
@@ -184,14 +179,14 @@ export default defineComponent({
 }
 .input-box-normal-textarea{
     border-radius: 4px;
-    border: 1px solid #dcdfe6;
+    border: 1px solid var(--input-box-border);
     display: flex;
     align-items: center;
     flex-direction: row;
     position: relative;
 }
 .avtive{
-    border: 1px solid #409eff;
+    border: 1px solid  var(--input-box-border-hover);
 }
 .danger{
     border: 1px solid var(--danger);
@@ -209,7 +204,7 @@ export default defineComponent({
     width: 100%;
     flex-grow: 1;
     -webkit-appearance: none;
-    color: #000;
+    color: var(--input-box-text-color);
     font-size: inherit;
     height: 40px;
     line-height: 29px;
@@ -221,14 +216,14 @@ export default defineComponent({
     font-size: 14px;
 }
 .input-inner::placeholder{
-    color: #a8abb2;
+    color: var(--input-box-placeholder);
 }
 .col-right{
     margin-right: 8px;
     color: var(--color-regular);
 }
 .avtive-color{
-    color: #409eff;
+    color: var(--input-box-avtive);
 }
 .textarea__box__vh{
     position: relative;
@@ -240,8 +235,8 @@ export default defineComponent({
     width: 100%;
     font-size: inherit;
     font-family: inherit;
-    color: #606266;
-    background-color: #fff;
+    color: var(--input-box-vh);
+    background-color: var(--input-box-vh-background);
     background-image: none;
     -webkit-appearance: none;
     border-radius: 4px;
